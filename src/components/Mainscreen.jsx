@@ -36,15 +36,7 @@ const Mainscreen = () => {
             const point = { node: jsondata[entry].node, x: jsondata[entry].coords_2d.x, y: jsondata[entry].coords_2d.y }
             setPath(prevState => [...prevState, point]);
         });
-        /*Object.values(jsondata).map((entry) => {
-            if (full_path.includes(entry.node)) {
-                const point = { node: entry.node, x: entry.coords_2d.x, y: entry.coords_2d.y }
-                setPath(prevState => [...prevState, point]);
-            }
-        })*/
     }, [selectedPoints]);
-
-    console.log(path);
 
     return (
         <div style={styles.wrapper}>

@@ -1,7 +1,7 @@
 {
     "node_001": {
         "node": "node_001",
-        "name": "first_node",
+        "name": "cisternas_S.A.",
         "image_360": "null",
         "coords_2d": {
             "x": 60,
@@ -21,11 +21,11 @@
     },
     "node_002": {
         "node": "node_002",
-        "name": "second_node",
+        "name": "baluwatar_1",
         "image_360": "null",
         "coords_2d": {
             "x": 60,
-            "y": 390
+            "y": 380
         },
         "conections": {
             "node_001": 1,
@@ -42,11 +42,11 @@
     },
     "node_003": {
         "node": "node_003",
-        "name": "third_node",
+        "name": "baluwatar_and_bhatbhateni",
         "image_360": "null",
         "coords_2d": {
             "x": 140,
-            "y": 390
+            "y": 380
         },
         "conections": {
             "node_002": 1,
@@ -64,14 +64,15 @@
     },
     "node_004": {
         "node": "node_004",
-        "name": "forth_node",
+        "name": "bhatbhateni",
         "image_360": "null",
         "coords_2d": {
             "x": 140,
             "y": 590
         },
         "conections": {
-            "node_003": 1
+            "node_003": 1,
+            "node_010": 3
         },
         "hotspot_360": [
             {
@@ -84,14 +85,164 @@
     },
     "node_005": {
         "node": "node_005",
-        "name": "fifth_node",
+        "name": "baluwatar_3",
         "image_360": "null",
         "coords_2d": {
-            "x": 200,
-            "y": 300
+            "x": 295,
+            "y": 340
         },
         "conections": {
-            "node_003": 1
+            "node_003": 1,
+            "node_006": 2,
+            "node_007": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_006": {
+        "node": "node_006",
+        "name": "calle_del_sexo",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 265,
+            "y": 220
+        },
+        "conections": {
+            "node_005": 2,
+            "node_008": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_007": {
+        "node": "node_007",
+        "name": "baluwatar_4",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 400,
+            "y": 315
+        },
+        "conections": {
+            "node_005": 1,
+            "node_008": 1,
+            "node_009": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_008": {
+        "node": "node_008",
+        "name": "casa_de_sheinbaum",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 400,
+            "y": 200
+        },
+        "conections": {
+            "node_006": 2,
+            "node_007": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_009": {
+        "node": "node_009",
+        "name": "baluwatar_and_nagar",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 435,
+            "y": 310
+        },
+        "conections": {
+            "node_007": 1,
+            "node_010": 2,
+            "node_011": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_010": {
+        "node": "node_010",
+        "name": "nagar",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 435,
+            "y": 600
+        },
+        "conections": {
+            "node_004": 3,
+            "node_009": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_011": {
+        "node": "node_011",
+        "name": "baluwatar_and_lazimpat",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 492,
+            "y": 310
+        },
+        "conections": {
+            "node_009": 1,
+            "node_012": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_012": {
+        "node": "node_012",
+        "name": "lazimpat",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 492,
+            "y": 100
+        },
+        "conections": {
+            "node_011": 2
         },
         "hotspot_360": [
             {
