@@ -1,0 +1,105 @@
+{
+    "node_001": {
+        "node": "node_001",
+        "name": "first_node",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 60,
+            "y": 450
+        },
+        "conections": {
+            "node_002": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_002": {
+        "node": "node_002",
+        "name": "second_node",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 60,
+            "y": 390
+        },
+        "conections": {
+            "node_001": 1,
+            "node_003": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_003": {
+        "node": "node_003",
+        "name": "third_node",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 140,
+            "y": 390
+        },
+        "conections": {
+            "node_002": 1,
+            "node_004": 1,
+            "node_005": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_004": {
+        "node": "node_004",
+        "name": "forth_node",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 140,
+            "y": 590
+        },
+        "conections": {
+            "node_003": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_005": {
+        "node": "node_005",
+        "name": "fifth_node",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 200,
+            "y": 300
+        },
+        "conections": {
+            "node_003": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    }
+}
