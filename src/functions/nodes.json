@@ -222,7 +222,8 @@
         },
         "conections": {
             "node_009": 1,
-            "node_012": 2
+            "node_012": 2,
+            "node_013": 1
         },
         "hotspot_360": [
             {
@@ -243,6 +244,152 @@
         },
         "conections": {
             "node_011": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_013": {
+        "node": "node_013",
+        "name": "baluwatar_5",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 710,
+            "y": 310
+        },
+        "conections": {
+            "node_011": 1,
+            "node_014": 2,
+            "node_015": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_014": {
+        "node": "node_014",
+        "name": "supermarket_2",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 710,
+            "y": 440
+        },
+        "conections": {
+            "node_013": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_015": {
+        "node": "node_015",
+        "name": "baluwatar_6",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 890,
+            "y": 310
+        },
+        "conections": {
+            "node_013": 1,
+            "node_016": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_016": {
+        "node": "node_016",
+        "name": "tetlan_1",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 890,
+            "y": 440
+        },
+        "conections": {
+            "node_015": 2,
+            "node_017": 1,
+            "node_018": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_017": {
+        "node": "node_017",
+        "name": "iom",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 820,
+            "y": 440
+        },
+        "conections": {
+            "node_016": 1
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_018": {
+        "node": "node_018",
+        "name": "tetlan_2",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 890,
+            "y": 613
+        },
+        "conections": {
+            "node_016": 1,
+            "node_019": 2
+        },
+        "hotspot_360": [
+            {
+                "pitch": 10,
+                "yaw": 45,
+                "destiny": "placeholder",
+                "text": "placeholder"
+            }
+        ]
+    },
+    "node_019": {
+        "node": "node_019",
+        "name": "mhac",
+        "image_360": "null",
+        "coords_2d": {
+            "x": 750,
+            "y": 613
+        },
+        "conections": {
+            "node_018": 2
         },
         "hotspot_360": [
             {

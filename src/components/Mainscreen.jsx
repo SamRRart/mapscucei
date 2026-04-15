@@ -1,15 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import jsondata from '../functions/nodes.json';
+import { useNavigate } from 'react-router-dom'
 
 import placeholder from '../assets/smokandrew.png';
 import { dijkstraRoute } from '../functions/dijkstra';
 
 const Mainscreen = () => {
+    const navigate = useNavigate();
+    const landmarks = {
+        key1: 'node_001',
+        key2: 'node_004',
+        key3: 'node_006',
+        key4: 'node_008',
+        key5: 'node_010',
+        key6: 'node_014',
+        key7: 'node_017',
+        key8: 'node_019'
+    }
     const [path, setPath] = useState([]);
+    const [lastSelected, setLast] = useState(null);
     const [selectedPoints, setSelectedPoints] = useState([]);
     const polylinePoints = path.map(p => `${p.x},${p.y}`).join(' ');
 
     const handlePointClick = (point) => {
+        setLast({
+            name: point.name,
+            node: point.node
+        });
+        console.log(point);
         const exists = selectedPoints.some(item => item.id == point.id);
         if (exists) {
             return;
@@ -40,6 +58,12 @@ const Mainscreen = () => {
 
     return (
         <div style={styles.wrapper}>
+            {lastSelected ?
+                <div style={styles.controls}>
+                    <p>Selected: {lastSelected.name}</p>
+                    <button onClick={() => navigate(`/viewer/${lastSelected.node}`)}>Go to: {lastSelected.name}</button>
+                </div>
+                : null}
             <div style={styles.container}>
                 <img
                     src={placeholder}
@@ -59,6 +83,7 @@ const Mainscreen = () => {
                     )}
                 </svg>
 
+                {/*selectedPoints.some(p => p.name === entry[1].name) ? '#00ff00' : '#ff4444' */}
                 {Object.entries(jsondata).map((entry) => (
                     <button
                         key={entry[1].name}
@@ -69,16 +94,12 @@ const Mainscreen = () => {
                             ...styles.point,
                             left: entry[1].coords_2d.x,
                             top: entry[1].coords_2d.y,
-                            backgroundColor: selectedPoints.some(p => p.name === entry[1].name) ? '#00ff00' : '#ff4444',
+                            backgroundColor: Object.values(landmarks).some(landmark => landmark == entry[0]) ? '#ff4444' : 'transparent',
+                            border: Object.values(landmarks).some(landmark => landmark == entry[0]) ? '#000000' : ' transparent'
                         }}
                         title={entry[1].name}
                     />
                 ))}
-            </div>
-
-            <div style={styles.controls}>
-                <p>Selected: {selectedPoints.length} / 2</p>
-                <button onClick={() => setSelectedPoints([])}>Clear Selection</button>
             </div>
         </div>
     );

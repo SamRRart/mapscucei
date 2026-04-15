@@ -7,7 +7,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<Mainscreen />} />
-        <Route path='/viewer/:id' element={<Viewer />} />
+        <Route path='/viewer/:node' element={<Viewer />} />
       </Routes>
     </Router>
   )
