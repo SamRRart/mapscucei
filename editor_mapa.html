@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editor de Nodos — CUCEI</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { display: flex; height: 100vh; background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
+
+    /* ── MAP ── */
+    #map { flex: 1; z-index: 1; }
+
+    /* ── SIDE PANEL ── */
+    #panel {
+      width: 320px; min-width: 320px;
+      background: #1a1a2e;
+      border-left: 1px solid #0f3460;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    #panel-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #0f3460;
+    }
+    #panel-header h2 { font-size: 15px; color: #fff; }
+    #panel-header p  { font-size: 11px; color: #888; margin-top: 3px; }
+
+    /* Mode toggle */
+    #mode-bar {
+      display: flex; gap: 6px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .mode-btn {
+      flex: 1; padding: 7px 4px;
+      border: 1px solid #0f3460;
+      border-radius: 6px;
+      background: #16213e;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all .15s;
+    }
+    .mode-btn.active { background: #0f3460; color: #fff; border-color: #536dfe; }
+    .mode-btn:hover:not(.active) { background: #1e2d5a; }
+
+    /* Stats row */
+    #stats {
+      display: flex; gap: 8px;
+      padding: 8px 12px;
+      font-size: 11px; color: #888;
+      border-bottom: 1px solid #0f3460;
+    }
+    #stats span { background: #16213e; border-radius: 4px; padding: 3px 7px; }
+    #stats b { color: #4fc3f7; }
+
+    /* Node list */
+    #node-list {
+      flex: 1; overflow-y: auto;
+      padding: 8px 10px;
+    }
+    .node-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 6px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      background: #16213e;
+      border: 1px solid transparent;
+      font-size: 12px;
+      transition: border-color .1s;
+    }
+    .node-item.landmark { border-left: 3px solid #ef5350; }
+    .node-item.normal   { border-left: 3px solid #4fc3f7; }
+    .node-item.selected-item { border-color: #ffd54f; }
+    .node-item input {
+      flex: 1; background: transparent; border: none;
+      color: #e0e0e0; font-size: 12px; outline: none;
+    }
+    .node-item input:focus { color: #fff; }
+    .node-id { color: #536dfe; font-size: 10px; min-width: 60px; }
+    .del-btn {
+      background: none; border: none; color: #555;
+      cursor: pointer; font-size: 14px; line-height: 1;
+      padding: 0 2px;
+      transition: color .1s;
+    }
+    .del-btn:hover { color: #ef5350; }
+    .landmark-toggle {
+      width: 10px; height: 10px; border-radius: 50%;
+      cursor: pointer; flex-shrink: 0;
+      border: 1.5px solid #555;
+    }
+
+    /* Connections list */
+    #conn-section {
+      padding: 6px 10px 4px;
+      border-top: 1px solid #0f3460;
+    }
+    #conn-section h3 { font-size: 11px; color: #888; margin-bottom: 4px; }
+    #conn-list { max-height: 120px; overflow-y: auto; }
+    .conn-item {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; color: #aaa;
+      padding: 3px 4px;
+      background: #16213e;
+      border-radius: 4px;
+      margin-bottom: 3px;
+    }
+    .conn-item .del-btn { font-size: 12px; }
+
+    /* Bottom actions */
+    #actions {
+      padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+      border-top: 1px solid #0f3460;
+    }
+    #actions button {
+      width: 100%; padding: 9px;
+      border-radius: 6px; border: none;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    #actions button:hover { opacity: .85; }
+    #btn-download { background: #536dfe; color: #fff; }
+    #btn-import {
+      width: 100%; padding: 9px;
+      border-radius: 6px; border: 1px solid #37474f;
+      background: #1e2a32; color: #aaa;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; text-align: center;
+      display: block; box-sizing: border-box;
+      transition: opacity .15s;
+    }
+    #btn-import:hover { opacity: .85; }
+
+    /* Hint toast */
+    #hint {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: #263238cc; backdrop-filter: blur(6px);
+      color: #e0e0e0; padding: 8px 18px;
+      border-radius: 20px; font-size: 12px;
+      pointer-events: none;
+      transition: opacity .3s;
+      z-index: 9999;
+    }
+
+    /* Leaflet marker override */
+    .node-marker-div {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 6px rgba(0,0,0,.5);
+      transition: transform .1s;
+    }
+    .node-marker-div.landmark-marker { background: #ef5350; }
+    .node-marker-div.normal-marker   { background: #4fc3f7; }
+    .node-marker-div.selected-marker { transform: scale(1.6); border-color: #ffd54f; }
+    .node-marker-label {
+      white-space: nowrap;
+      font-size: 10px;
+      color: #fff;
+      text-shadow: 0 0 4px #000, 0 0 4px #000;
+      margin-top: 2px;
+      pointer-events: none;
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #16213e; }
+    ::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="panel">
+  <div id="panel-header">
+    <h2>Editor de Nodos — CUCEI</h2>
+    <p>Construye el grafo sobre el mapa real</p>
+  </div>
+
+  <div id="mode-bar">
+    <button class="mode-btn active" id="btn-mode-add"    onclick="setMode('add')">＋ Agregar nodo</button>
+    <button class="mode-btn"        id="btn-mode-connect" onclick="setMode('connect')">⟵ Conectar</button>
+    <button class="mode-btn"        id="btn-mode-delete"  onclick="setMode('delete')">✕ Borrar</button>
+  </div>
+
+  <div id="stats">
+    <span>Nodos: <b id="stat-nodes">0</b></span>
+    <span>Conexiones: <b id="stat-conns">0</b></span>
+    <span id="stat-select" style="display:none">Seleccionado: <b id="stat-node-name">—</b></span>
+  </div>
+
+  <div id="node-list"></div>
+
+  <div id="conn-section">
+    <h3>CONEXIONES</h3>
+    <div id="conn-list"></div>
+  </div>
+
+  <div id="actions">
+    <button id="btn-download" onclick="downloadJSON()">⬇ Descargar nodes.json</button>
+    <label id="btn-import" title="Carga un nodes.json existente para continuar editando">
+      📂 Importar nodes.json
+      <input type="file" id="import-input" accept=".json" style="display:none" onchange="importNodesJSON(event)" />
+    </label>
+    <button id="btn-clear"    onclick="clearAll()">🗑 Limpiar todo</button>
+  </div>
+</div>
+
+<div id="hint">Haz clic en el mapa para colocar un nodo</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let nodes       = [];   // { id, name, lat, lng, landmark, marker, layer }
+let connections = [];   // { id, from, to, dist, polyline }
+let selectedNode = null;
+let mode = 'add';       // 'add' | 'connect' | 'delete'
+let nodeCounter = 1;
+let connCounter = 1;
+
+// ─────────────────────────────────────────────
+//  MAP — centrado en CUCEI, Guadalajara
+// ─────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true }).setView([20.65906, -103.32962], 17);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 20,
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+// ─────────────────────────────────────────────
+//  MAP CLICK → ADD NODE
+// ─────────────────────────────────────────────
+map.on('click', function (e) {
+  if (mode !== 'add') return;
+  const { lat, lng } = e.latlng;
+  createNode(lat, lng);
+});
+
+// ─────────────────────────────────────────────
+//  CREATE NODE
+// ─────────────────────────────────────────────
+function createNode(lat, lng, name = null, landmark = false) {
+  const id   = `node_${String(nodeCounter).padStart(3, '0')}`;
+  const label = name || `nodo_${String(nodeCounter).padStart(3, '0')}`;
+  nodeCounter++;
+
+  const node = { id, name: label, lat, lng, landmark, marker: null };
+
+  const marker = buildMarker(node);
+  node.marker = marker;
+  nodes.push(node);
+
+  marker.addTo(map);
+  renderPanel();
+  showHint(mode === 'add' ? 'Nodo creado. Sigue haciendo clic para más nodos.' : '');
+  return node;
+}
+
+function buildMarker(node) {
+  const icon = L.divIcon({
+    className: '',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    html: `<div class="node-marker-div ${node.landmark ? 'landmark-marker' : 'normal-marker'}" id="dot-${node.id}"></div>`
+  });
+  const marker = L.marker([node.lat, node.lng], { icon, title: node.name });
+
+  marker.on('click', function (e) {
+    L.DomEvent.stopPropagation(e);
+    handleMarkerClick(node);
+  });
+
+  marker.bindTooltip(node.name, {
+    permanent: false,
+    direction: 'top',
+    className: 'node-marker-label',
+    offset: [0, -8]
+  });
+
+  return marker;
+}
+
+// ─────────────────────────────────────────────
+//  MARKER CLICK
+// ─────────────────────────────────────────────
+function handleMarkerClick(node) {
+  if (mode === 'delete') {
+    deleteNode(node.id);
+    return;
+  }
+  if (mode !== 'connect') return;
+
+  if (!selectedNode) {
+    // First node of connection
+    selectedNode = node;
+    highlightMarker(node, true);
+    document.getElementById('stat-select').style.display = '';
+    document.getElementById('stat-node-name').textContent = node.name;
+    showHint('Ahora haz clic en el segundo nodo para conectarlos');
+  } else {
+    if (selectedNode.id === node.id) {
+      // Deselect
+      highlightMarker(selectedNode, false);
+      selectedNode = null;
+      document.getElementById('stat-select').style.display = 'none';
+      showHint('Selección cancelada');
+      return;
+    }
+    // Create connection
+    const exists = connections.some(
+      c => (c.from === selectedNode.id && c.to === node.id) ||
+           (c.from === node.id && c.to === selectedNode.id)
+    );
+    if (!exists) {
+      const dist = haversine(selectedNode.lat, selectedNode.lng, node.lat, node.lng);
+      const polyline = L.polyline(
+        [[selectedNode.lat, selectedNode.lng], [node.lat, node.lng]],
+        { color: '#536dfe', weight: 2.5, opacity: 0.85 }
+      ).addTo(map);
+      connections.push({
+        id: `conn_${connCounter++}`,
+        from: selectedNode.id,
+        to: node.id,
+        dist: Math.round(dist * 10) / 10,
+        polyline
+      });
+      showHint(`Conectados: ${selectedNode.name} ↔ ${node.name} (${Math.round(dist)} m)`);
+    } else {
+      showHint('Ya existe esa conexión');
+    }
+    highlightMarker(selectedNode, false);
+    selectedNode = null;
+    document.getElementById('stat-select').style.display = 'none';
+    renderPanel();
+  }
+}
+
+// ─────────────────────────────────────────────
+//  DELETE NODE
+// ─────────────────────────────────────────────
+function deleteNode(nodeId) {
+  const node = nodes.find(n => n.id === nodeId);
+  if (!node) return;
+
+  // Remove polylines linked to this node
+  const toRemove = connections.filter(c => c.from === nodeId || c.to === nodeId);
+  toRemove.forEach(c => { map.removeLayer(c.polyline); });
+  connections = connections.filter(c => c.from !== nodeId && c.to !== nodeId);
+
+  map.removeLayer(node.marker);
+  nodes = nodes.filter(n => n.id !== nodeId);
+  renderPanel();
+  showHint(`Nodo ${nodeId} eliminado`);
+}
+
+// ─────────────────────────────────────────────
+//  DELETE CONNECTION
+// ─────────────────────────────────────────────
+function deleteConnection(connId) {
+  const conn = connections.find(c => c.id === connId);
+  if (!conn) return;
+  map.removeLayer(conn.polyline);
+  connections = connections.filter(c => c.id !== connId);
+  renderPanel();
+}
+
+// ─────────────────────────────────────────────
+//  TOGGLE LANDMARK
+// ─────────────────────────────────────────────
+function toggleLandmark(nodeId) {
+  const node = nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  node.landmark = !node.landmark;
+  map.removeLayer(node.marker);
+  node.marker = buildMarker(node);
+  node.marker.addTo(map);
+  renderPanel();
+}
+
+// ─────────────────────────────────────────────
+//  HIGHLIGHT MARKER
+// ─────────────────────────────────────────────
+function highlightMarker(node, on) {
+  const el = document.getElementById(`dot-${node.id}`);
+  if (el) el.classList.toggle('selected-marker', on);
+}
+
+// ─────────────────────────────────────────────
+//  RENDER PANEL
+// ─────────────────────────────────────────────
+function renderPanel() {
+  document.getElementById('stat-nodes').textContent = nodes.length;
+  document.getElementById('stat-conns').textContent = connections.length;
+
+  // Node list
+  const list = document.getElementById('node-list');
+  list.innerHTML = '';
+  nodes.forEach(node => {
+    const div = document.createElement('div');
+    div.className = `node-item ${node.landmark ? 'landmark' : 'normal'}`;
+    div.innerHTML = `
+      <div class="landmark-toggle"
+           style="background:${node.landmark ? '#ef5350' : '#4fc3f7'}"
+           title="${node.landmark ? 'Es landmark — clic para cambiar' : 'Es nodo normal — clic para landmark'}"
+           onclick="toggleLandmark('${node.id}')"></div>
+      <span class="node-id">${node.id}</span>
+      <input type="text" value="${node.name}"
+             onchange="renameNode('${node.id}', this.value)"
+             title="Nombre del nodo" />
+      <button class="del-btn" onclick="deleteNode('${node.id}')" title="Eliminar">✕</button>
+    `;
+    list.appendChild(div);
+  });
+
+  // Connection list
+  const clist = document.getElementById('conn-list');
+  clist.innerHTML = '';
+  if (connections.length === 0) {
+    clist.innerHTML = '<p style="font-size:11px;color:#555;padding:3px 4px">Sin conexiones</p>';
+  }
+  connections.forEach(conn => {
+    const div = document.createElement('div');
+    div.className = 'conn-item';
+    div.innerHTML = `
+      <span>${conn.from} ↔ ${conn.to}</span>
+      <span style="color:#536dfe">${conn.dist} m</span>
+      <button class="del-btn" onclick="deleteConnection('${conn.id}')" title="Eliminar">✕</button>
+    `;
+    clist.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────────
+//  RENAME NODE
+// ─────────────────────────────────────────────
+function renameNode(nodeId, newName) {
+  const node = nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  node.name = newName.trim() || node.id;
+  node.marker.setTooltipContent(node.name);
+  node.marker.options.title = node.name;
+}
+
+// ─────────────────────────────────────────────
+//  MODE
+// ─────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  if (selectedNode) { highlightMarker(selectedNode, false); selectedNode = null; }
+  document.getElementById('stat-select').style.display = 'none';
+
+  ['add','connect','delete'].forEach(x => {
+    document.getElementById(`btn-mode-${x === 'delete' ? 'delete' : x}`).classList.toggle('active', x === m);
+  });
+  // Fix IDs
+  document.getElementById('btn-mode-add').classList.toggle('active', m === 'add');
+  document.getElementById('btn-mode-connect').classList.toggle('active', m === 'connect');
+  document.getElementById('btn-mode-delete').classList.toggle('active', m === 'delete');
+
+  const hints = {
+    add:     'Haz clic en el mapa para colocar un nodo',
+    connect: 'Haz clic en un nodo, luego en otro para conectarlos',
+    delete:  'Haz clic en un nodo para eliminarlo'
+  };
+  showHint(hints[m]);
+
+  // Cursor
+  map.getContainer().style.cursor = m === 'add' ? 'crosshair' : 'default';
+}
+
+// ─────────────────────────────────────────────
+//  IMPORT nodes.json
+// ─────────────────────────────────────────────
+function importNodesJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      const keys = Object.keys(data);
+      if (keys.length === 0) { showHint('JSON vacío'); return; }
+
+      // Clear current state
+      nodes.forEach(n => map.removeLayer(n.marker));
+      connections.forEach(c => map.removeLayer(c.polyline));
+      nodes = []; connections = [];
+      nodeCounter = 1; connCounter = 1;
+
+      // Import nodes
+      const nodeMap = {};
+      keys.forEach(key => {
+        const nd = data[key];
+        if (!nd.coords_gps?.lat) return;
+
+        // Keep numbering consistent
+        const num = parseInt(key.replace('node_', ''), 10);
+        if (!isNaN(num) && num >= nodeCounter) nodeCounter = num + 1;
+
+        const node = {
+          id:       key,
+          name:     nd.name || key,
+          lat:      nd.coords_gps.lat,
+          lng:      nd.coords_gps.lng,
+          landmark: nd.landmark || false,
+          marker:   null
+        };
+        const marker = buildMarker(node);
+        node.marker = marker;
+        nodes.push(node);
+        marker.addTo(map);
+        nodeMap[key] = node;
+      });
+
+      // Import connections (deduplicated)
+      const seen = new Set();
+      keys.forEach(key => {
+        const nd = data[key];
+        const nodeA = nodeMap[key];
+        if (!nodeA) return;
+        Object.entries(nd.conections || {}).forEach(([neighborKey, dist]) => {
+          const nodeB = nodeMap[neighborKey];
+          if (!nodeB) return;
+          const eid = [key, neighborKey].sort().join('|');
+          if (seen.has(eid)) return;
+          seen.add(eid);
+          const polyline = L.polyline(
+            [[nodeA.lat, nodeA.lng], [nodeB.lat, nodeB.lng]],
+            { color: '#536dfe', weight: 2.5, opacity: 0.85 }
+          ).addTo(map);
+          connections.push({
+            id:       `conn_${connCounter++}`,
+            from:     key,
+            to:       neighborKey,
+            dist:     typeof dist === 'number' ? Math.round(dist * 10) / 10 : parseFloat(dist) || 0,
+            polyline
+          });
+        });
+      });
+
+      renderPanel();
+
+      // Fit view to imported nodes
+      if (nodes.length > 0) {
+        map.fitBounds(L.latLngBounds(nodes.map(n => [n.lat, n.lng])), { padding: [40, 40] });
+      }
+      showHint(`Importados: ${nodes.length} nodos, ${connections.length} conexiones`);
+    } catch (err) {
+      showHint('Error al leer el JSON: ' + err.message);
+    }
+    event.target.value = ''; // allow re-importing same file
+  };
+  reader.readAsText(file);
+}
+
+// ─────────────────────────────────────────────
+function downloadJSON() {
+  if (nodes.length === 0) { showHint('No hay nodos para exportar'); return; }
+
+  const output = {};
+  nodes.forEach(node => {
+    // Build connections object for this node
+    const conns = {};
+    connections.forEach(c => {
+      if (c.from === node.id) conns[c.to]   = c.dist;
+      if (c.to   === node.id) conns[c.from] = c.dist;
+    });
+
+    output[node.id] = {
+      node:       node.id,
+      name:       node.name,
+      landmark:   node.landmark,
+      image_360:  "null",
+      coords_gps: {
+        lat: Math.round(node.lat * 1e7) / 1e7,
+        lng: Math.round(node.lng * 1e7) / 1e7
+      },
+      coords_2d: { x: 0, y: 0 },
+      conections: conns,
+      hotspot_360: []
+    };
+  });
+
+  const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nodes.json';
+  a.click();
+  showHint('nodes.json descargado ✓');
+}
+
+// ─────────────────────────────────────────────
+//  CLEAR ALL
+// ─────────────────────────────────────────────
+function clearAll() {
+  if (!confirm('¿Eliminar todos los nodos y conexiones?')) return;
+  nodes.forEach(n => map.removeLayer(n.marker));
+  connections.forEach(c => map.removeLayer(c.polyline));
+  nodes = []; connections = [];
+  nodeCounter = 1; connCounter = 1;
+  selectedNode = null;
+  renderPanel();
+  showHint('Tablero limpio');
+}
+
+// ─────────────────────────────────────────────
+//  HAVERSINE (metros entre dos GPS)
+// ─────────────────────────────────────────────
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) ** 2 +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ─────────────────────────────────────────────
+//  HINT TOAST
+// ─────────────────────────────────────────────
+let hintTimer;
+function showHint(text) {
+  const el = document.getElementById('hint');
+  el.textContent = text;
+  el.style.opacity = '1';
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => el.style.opacity = '0', 3500);
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+setMode('add');
+renderPanel();
+</script>
+</body>
+</html>

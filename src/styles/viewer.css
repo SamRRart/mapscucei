@@ -1,0 +1,17 @@
+/* Pannellum hotspot override */
+.pnlm-hotspot-custom {
+    width: 34px;
+    height: 34px;
+    background: rgba(79, 195, 247, 0.85) !important;
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.pnlm-hotspot-custom::after {
+    color: white;
+    font-size: 18px;
+    content: '▶';
+    line-height: 30px;
+    text-align: center;
+    display: block;
+}

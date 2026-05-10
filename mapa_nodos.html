@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mapa de Nodos - CUCEI</title>
+  <style>
+    body { background: #1a1a2e; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; color: white; }
+    h1 { margin: 20px 0 5px; }
+    p { color: #aaa; margin: 0 0 15px; font-size: 13px; }
+    svg { background: #16213e; border-radius: 12px; border: 1px solid #0f3460; }
+    .node-label { font-size: 10px; fill: #e0e0e0; pointer-events: none; }
+    .node-circle { cursor: pointer; }
+    .landmark { fill: #ff4444; stroke: #000; stroke-width: 1.5; }
+    .normal { fill: #4fc3f7; stroke: #0288d1; stroke-width: 1; }
+    line { stroke: #536dfe; stroke-width: 2; stroke-linecap: round; }
+    .legend { display: flex; gap: 20px; margin-top: 10px; font-size: 13px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+  <h1>Mapa de Nodos</h1>
+  <p>Cada punto representa un nodo. Los rojos son landmarks principales.</p>
+
+  <svg width="980" height="720" viewBox="0 0 980 720">
+    <!-- Conexiones (líneas) -->
+    <!-- node_001 - node_002 -->
+    <line x1="60" y1="450" x2="60" y2="380" />
+    <!-- node_002 - node_003 -->
+    <line x1="60" y1="380" x2="140" y2="380" />
+    <!-- node_003 - node_004 -->
+    <line x1="140" y1="380" x2="140" y2="590" />
+    <!-- node_003 - node_005 -->
+    <line x1="140" y1="380" x2="295" y2="340" />
+    <!-- node_004 - node_010 -->
+    <line x1="140" y1="590" x2="435" y2="600" />
+    <!-- node_005 - node_006 -->
+    <line x1="295" y1="340" x2="265" y2="220" />
+    <!-- node_005 - node_007 -->
+    <line x1="295" y1="340" x2="400" y2="315" />
+    <!-- node_006 - node_008 -->
+    <line x1="265" y1="220" x2="400" y2="200" />
+    <!-- node_007 - node_008 -->
+    <line x1="400" y1="315" x2="400" y2="200" />
+    <!-- node_007 - node_009 -->
+    <line x1="400" y1="315" x2="435" y2="310" />
+    <!-- node_009 - node_010 -->
+    <line x1="435" y1="310" x2="435" y2="600" />
+    <!-- node_009 - node_011 -->
+    <line x1="435" y1="310" x2="492" y2="310" />
+    <!-- node_011 - node_012 -->
+    <line x1="492" y1="310" x2="492" y2="100" />
+    <!-- node_011 - node_013 -->
+    <line x1="492" y1="310" x2="710" y2="310" />
+    <!-- node_013 - node_014 -->
+    <line x1="710" y1="310" x2="710" y2="440" />
+    <!-- node_013 - node_015 -->
+    <line x1="710" y1="310" x2="890" y2="310" />
+    <!-- node_015 - node_016 -->
+    <line x1="890" y1="310" x2="890" y2="440" />
+    <!-- node_016 - node_017 -->
+    <line x1="890" y1="440" x2="820" y2="440" />
+    <!-- node_016 - node_018 -->
+    <line x1="890" y1="440" x2="890" y2="613" />
+    <!-- node_018 - node_019 -->
+    <line x1="890" y1="613" x2="750" y2="613" />
+
+    <!-- Nodos normales -->
+    <circle class="node-circle normal" cx="60" cy="380" r="7" /><text class="node-label" x="68" y="377">node_002</text><text class="node-label" x="68" y="388" style="fill:#aaa">baluwatar_1</text>
+    <circle class="node-circle normal" cx="140" cy="380" r="7" /><text class="node-label" x="148" y="377">node_003</text><text class="node-label" x="148" y="388" style="fill:#aaa">bhat+baluw.</text>
+    <circle class="node-circle normal" cx="295" cy="340" r="7" /><text class="node-label" x="303" y="337">node_005</text><text class="node-label" x="303" y="348" style="fill:#aaa">baluwatar_3</text>
+    <circle class="node-circle normal" cx="265" cy="220" r="7" /><text class="node-label" x="273" y="217">node_006</text><text class="node-label" x="273" y="228" style="fill:#aaa">calle_del_sexo</text>
+    <circle class="node-circle normal" cx="400" cy="315" r="7" /><text class="node-label" x="408" y="312">node_007</text><text class="node-label" x="408" y="323" style="fill:#aaa">baluwatar_4</text>
+    <circle class="node-circle normal" cx="435" cy="310" r="7" /><text class="node-label" x="443" y="307">node_009</text><text class="node-label" x="443" y="318" style="fill:#aaa">baluw.+nagar</text>
+    <circle class="node-circle normal" cx="492" cy="310" r="7" /><text class="node-label" x="500" y="307">node_011</text><text class="node-label" x="500" y="318" style="fill:#aaa">baluw.+lazimpat</text>
+    <circle class="node-circle normal" cx="710" cy="310" r="7" /><text class="node-label" x="718" y="307">node_013</text><text class="node-label" x="718" y="318" style="fill:#aaa">baluwatar_5</text>
+    <circle class="node-circle normal" cx="890" cy="310" r="7" /><text class="node-label" x="898" y="307">node_015</text><text class="node-label" x="898" y="318" style="fill:#aaa">baluwatar_6</text>
+    <circle class="node-circle normal" cx="890" cy="440" r="7" /><text class="node-label" x="898" y="437">node_016</text><text class="node-label" x="898" y="448" style="fill:#aaa">tetlan_1</text>
+    <circle class="node-circle normal" cx="890" cy="613" r="7" /><text class="node-label" x="898" y="610">node_018</text><text class="node-label" x="898" y="621" style="fill:#aaa">tetlan_2</text>
+
+    <!-- Landmarks (rojos) -->
+    <circle class="node-circle landmark" cx="60" cy="450" r="9" /><text class="node-label" x="70" y="447">node_001</text><text class="node-label" x="70" y="458" style="fill:#ff9999">cisternas_S.A.</text>
+    <circle class="node-circle landmark" cx="140" cy="590" r="9" /><text class="node-label" x="150" y="587">node_004</text><text class="node-label" x="150" y="598" style="fill:#ff9999">bhatbhateni</text>
+    <circle class="node-circle landmark" cx="265" cy="220" r="9" /><text class="node-label" x="245" y="207">node_006</text>
+    <circle class="node-circle landmark" cx="400" cy="200" r="9" /><text class="node-label" x="408" y="197">node_008</text><text class="node-label" x="408" y="208" style="fill:#ff9999">casa_sheinbaum</text>
+    <circle class="node-circle landmark" cx="435" cy="600" r="9" /><text class="node-label" x="443" y="597">node_010</text><text class="node-label" x="443" y="608" style="fill:#ff9999">nagar</text>
+    <circle class="node-circle landmark" cx="492" cy="100" r="9" /><text class="node-label" x="500" y="97">node_012</text><text class="node-label" x="500" y="108" style="fill:#ff9999">lazimpat</text>
+    <circle class="node-circle landmark" cx="710" cy="440" r="9" /><text class="node-label" x="718" y="437">node_014</text><text class="node-label" x="718" y="448" style="fill:#ff9999">supermarket_2</text>
+    <circle class="node-circle landmark" cx="820" cy="440" r="9" /><text class="node-label" x="828" y="437">node_017</text><text class="node-label" x="828" y="448" style="fill:#ff9999">iom</text>
+    <circle class="node-circle landmark" cx="750" cy="613" r="9" /><text class="node-label" x="758" y="610">node_019</text><text class="node-label" x="758" y="621" style="fill:#ff9999">mhac</text>
+  </svg>
+
+  <div class="legend">
+    <div><span class="dot" style="background:#ff4444"></span> Landmark principal</div>
+    <div><span class="dot" style="background:#4fc3f7"></span> Nodo de paso</div>
+    <div><span class="dot" style="background:#536dfe; border-radius:0; height:3px; width:20px; display:inline-block; vertical-align:middle; margin-right:5px"></span> Conexión</div>
+  </div>
+</body>
+</html>
