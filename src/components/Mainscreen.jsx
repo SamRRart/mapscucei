@@ -8,7 +8,7 @@
 //   3. Se calcula la ruta más corta con Dijkstra y se dibuja en amarillo
 //   4. El usuario puede pulsar "Iniciar navegación" para entrar al modo Street View
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useNavigate } from 'react-router-dom';
@@ -40,6 +40,31 @@ function nearestNode(lat, lng) {
     return { key: bestKey, dist: Math.round(bestDist) };
 }
 
+// ── Catalogo de destinos del campus ──────────────────────────────────────────
+// Cada entrada mapea un edificio / departamento al nodo mas cercano del grafo.
+const DESTINATIONS = [
+    { label: 'Módulo A — Planta Baja',  node: 'node_048',
+      departments: ['Control Escolar', 'Coordinación de Investigación', 'Coordinación de Servicios Académicos', 'Coordinación de Programas Docentes', 'Auditorio Enrique Díaz de León', 'PROULEX'] },
+    { label: 'Rectoría — Planta Alta',  node: 'node_047',
+      departments: ['Rectoría', 'Secretaría Administrativa', 'Secretaría Académica', 'Servicio Social', 'Módulo de Actividades Culturales y Deportivas'] },
+    { label: 'Biblioteca',              node: 'node_051',
+      departments: ['Becas', 'Aprendizaje Global'] },
+    { label: 'Módulo E — Planta Baja',  node: 'node_060',
+      departments: ['Coordinación de Química', 'Coordinación Farmacéutica', 'Auditorio Antonio Rodríguez', 'Coordinación de Ingeniería Química'] },
+    { label: 'Módulo L',                node: 'node_063',
+      departments: ['División de Ciencias Básicas', 'Unidad de Salud Integral'] },
+    { label: 'Módulo O — Planta Baja',  node: 'node_038',
+      departments: ['División de Tecnología para la Cibernética Humana', 'Coordinación de Biomédica', 'Coordinación de Informática (ICOM)', 'Coordinación de Ingeniería Eléctrica, Robótica y Fotónica', 'Auditorio Antonio Alatorre'] },
+    { label: 'Módulo O — Planta Alta',  node: 'node_001',
+      departments: ['Coordinación de Ingeniería Industrial', 'Ingeniería Civil', 'Ingeniería en Topografía', 'Ingeniería Mecánica Eléctrica', 'Ingeniería en Alimentos', 'Ingeniería en Logística y Transporte'] },
+    { label: 'Módulo V',                node: 'node_022',
+      departments: ['Coordinación de Física', 'Coordinación de Matemáticas', 'Coordinación de Ciencia de Materiales'] },
+    { label: 'Módulo Y',                node: 'node_011',
+      departments: ['Auditorio Dr. Nikolai V. Laverov'] },
+    { label: 'Módulo CTA',              node: 'node_011',
+      departments: ['Coordinación de Tecnologías para el Aprendizaje', 'Unidad de Multimedia', 'Unidad de Cómputo y Telecomunicaciones'] },
+];
+
 // ── Estados del flujo de selección ───────────────────────────────────────────
 // step 0: esperando que el usuario haga clic para marcar el origen
 // step 1: origen marcado, esperando clic para el destino
@@ -66,10 +91,31 @@ const Mainscreen = () => {
     const [routeInfo, setRouteInfo] = useState(null);   // { path, distance, steps }
     // stepRef permite leer el paso actual dentro del evento click de Leaflet
     const stepRef = useRef(0);
+    // destRef espeja el state dest para leer desde callbacks sin closure stale
+    const destRef  = useRef(null);
+
+    // Búsqueda de destino por nombre
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showSearch,  setShowSearch]  = useState(false);
 
     // Mantener stepRef y mapModeRef sincronizados con el state de React
-    useEffect(() => { stepRef.current = step; }, [step]);
+    useEffect(() => { stepRef.current  = step; },    [step]);
     useEffect(() => { mapModeRef.current = mapMode; }, [mapMode]);
+    useEffect(() => { destRef.current  = dest; },    [dest]);
+
+    // Filtrar DESTINATIONS según el texto escrito (por label o departamento)
+    const searchResults = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return [];
+        return DESTINATIONS
+            .map(d => ({
+                ...d,
+                matchedDept: d.departments.find(dep =>
+                    dep.toLowerCase().includes(q) && !d.label.toLowerCase().includes(q)
+                ) ?? null,
+            }))
+            .filter(d => d.label.toLowerCase().includes(q) || d.matchedDept !== null);
+    }, [searchQuery]);
 
     // ── Cambia el color y tamaño del punto de un nodo en el mapa ──────────
     // Se usa para resaltar origen (verde), destino (rojo) y ruta (amarillo)
@@ -95,6 +141,7 @@ const Mainscreen = () => {
         });
         setStep(0); stepRef.current = 0;
         setOrigin(null); setDest(null); setRouteInfo(null);
+        setSearchQuery(''); setShowSearch(false);
     }, [paintDot]);
 
     // ── Muestra un círculo pulsante donde el usuario hizo clic ─────────────
@@ -168,6 +215,43 @@ const Mainscreen = () => {
         map.fitBounds(L.latLngBounds(coords), { padding: [60, 60] });
     }, [paintDot]);
 
+    // ── Selecciona destino desde el buscador ─────────────────────────────────
+    // Coloca pin B en el nodo; si ya hay origen calcula la ruta de inmediato.
+    const selectDestBySearch = useCallback((result) => {
+        const map = mapRef.current;
+        if (!map) return;
+        const key  = result.node;
+        const node = jsondata[key];
+        if (!node?.coords_gps?.lat) return;
+
+        setSearchQuery(result.label);
+        setShowSearch(false);
+
+        // Colocar pin rojo B
+        if (destMarkerRef.current) destMarkerRef.current.remove();
+        destMarkerRef.current = L.marker(
+            [node.coords_gps.lat, node.coords_gps.lng],
+            { icon: pinIcon('#ef4444', 'B'), zIndexOffset: 500 }
+        ).addTo(map);
+        paintDot(key, '#ef4444', 1.8);
+
+        const newDest = { key, dist: 0 };
+        setDest(newDest);
+        destRef.current = newDest; // actualizar ref de forma síncrona
+
+        if (stepRef.current === 1 || stepRef.current === 2) {
+            // Ya hay origen → calcular ruta de inmediato
+            setStep(2); stepRef.current = 2;
+            setOrigin(prev => {
+                if (prev) drawRoute(map, prev.key, key);
+                return prev;
+            });
+        } else {
+            // No hay origen aún – centrar el mapa en el destino
+            map.panTo([node.coords_gps.lat, node.coords_gps.lng]);
+        }
+    }, [paintDot, drawRoute]);
+
     // ── Maneja el clic en el mapa: ajusta al nodo más cercano ─────────────
     // Modo explorar: clic único → abre Viewer en el nodo más cercano (libre)
     // Modo ruta: primer clic = origen (pin verde A), segundo clic = destino (pin rojo B)
@@ -193,7 +277,13 @@ const Mainscreen = () => {
             ).addTo(map);
             paintDot(key, '#22c55e', 1.8);
             setOrigin({ key, dist });
-            setStep(1); stepRef.current = 1;
+            if (destRef.current) {
+                // Destino pre-seleccionado vía búsqueda → calcular ruta directamente
+                setStep(2); stepRef.current = 2;
+                drawRoute(map, key, destRef.current.key);
+            } else {
+                setStep(1); stepRef.current = 1;
+            }
 
         } else if (stepRef.current === 1) {
             // Segundo clic: establecer destino y calcular ruta
@@ -346,23 +436,66 @@ const Mainscreen = () => {
                             )}
                         </div>
 
-                        {/* Destination */}
+                        {/* Destination — buscador o clic en mapa */}
                         <p style={S.label}>🎯 DESTINO</p>
-                        <div style={{ ...S.nodeBox, ...(destNode ? S.nodeBoxFilled : {}) }}>
-                            {destNode ? (
-                                <>
-                                    <span style={dot('#ef4444')} />
-                                    <div>
-                                        <div style={S.nodeName}>{destNode.name}</div>
-                                        {dest.dist > 0 && (
-                                            <div style={S.nodeSnap}>Nodo más cercano · {dest.dist} m</div>
-                                        )}
+                        {destNode ? (
+                            <div style={{ ...S.nodeBox, ...S.nodeBoxFilled, display: 'flex', alignItems: 'center' }}>
+                                <span style={dot('#ef4444')} />
+                                <div style={{ flex: 1 }}>
+                                    <div style={S.nodeName}>{destNode.name}</div>
+                                    {dest.dist > 0 && (
+                                        <div style={S.nodeSnap}>Nodo más cercano · {dest.dist} m</div>
+                                    )}
+                                </div>
+                                <button
+                                    title="Cambiar destino"
+                                    style={S.clearSearch}
+                                    onClick={() => {
+                                        if (destMarkerRef.current) { destMarkerRef.current.remove(); destMarkerRef.current = null; }
+                                        paintDot(dest.key, jsondata[dest.key]?.landmark ? '#ef5350' : '#4fc3f7', 1);
+                                        if (routeLayerRef.current) { routeLayerRef.current.remove(); routeLayerRef.current = null; }
+                                        setDest(null); destRef.current = null;
+                                        setRouteInfo(null);
+                                        setSearchQuery('');
+                                        if (stepRef.current === 2) { setStep(1); stepRef.current = 1; }
+                                    }}
+                                >✕</button>
+                            </div>
+                        ) : (
+                            <div style={S.searchWrapper}>
+                                <input
+                                    type="text"
+                                    placeholder="Buscar módulo o departamento..."
+                                    value={searchQuery}
+                                    onChange={e => { setSearchQuery(e.target.value); setShowSearch(true); }}
+                                    onFocus={() => setShowSearch(true)}
+                                    onBlur={() => setTimeout(() => setShowSearch(false), 150)}
+                                    style={S.searchInput}
+                                />
+                                {showSearch && searchResults.length > 0 && (
+                                    <div style={S.searchDropdown}>
+                                        {searchResults.map((r, i) => (
+                                            <button
+                                                key={i}
+                                                style={S.searchItem}
+                                                onMouseDown={e => e.preventDefault()}
+                                                onClick={() => selectDestBySearch(r)}
+                                            >
+                                                <span style={S.searchItemLabel}>{r.label}</span>
+                                                {r.matchedDept && (
+                                                    <span style={S.searchItemDept}>{r.matchedDept}</span>
+                                                )}
+                                            </button>
+                                        ))}
                                     </div>
-                                </>
-                            ) : (
-                                <span style={S.hint}>{originNode ? 'Clic en el mapa' : '—'}</span>
-                            )}
-                        </div>
+                                )}
+                                <p style={S.searchHint}>
+                                    {originNode
+                                        ? 'Escribe un destino o haz clic en el mapa'
+                                        : 'Primero marca tu posición en el mapa'}
+                                </p>
+                            </div>
+                        )}
 
                         {/* Route card */}
                         {routeInfo && !routeInfo.error && (
@@ -462,6 +595,25 @@ const S = {
     legend:        { marginTop:'auto', borderTop:'1px solid #1f2937', paddingTop:10, display:'flex', flexDirection:'column', gap:5 },
     legendTitle:   { fontSize:10, color:'#374151', letterSpacing:1, margin:'0 0 3px' },
     legendRow:     { display:'flex', alignItems:'center', gap:7, fontSize:11, color:'#6b7280' },
+
+    // Buscador de destino
+    searchWrapper:   { position:'relative', display:'flex', flexDirection:'column', gap:4 },
+    searchInput:     { background:'#1f2937', border:'1px solid #374151', borderRadius:8,
+                       color:'#fff', padding:'8px 10px', fontSize:12, outline:'none',
+                       width:'100%', boxSizing:'border-box' },
+    searchDropdown:  { position:'absolute', top:'100%', left:0, right:0, background:'#1f2937',
+                       border:'1px solid #374151', borderRadius:8, zIndex:999,
+                       maxHeight:200, overflowY:'auto', marginTop:2,
+                       boxShadow:'0 4px 12px rgba(0,0,0,.5)' },
+    searchItem:      { width:'100%', background:'none', border:'none',
+                       borderBottom:'1px solid #374151', color:'#e5e7eb',
+                       padding:'8px 10px', textAlign:'left', cursor:'pointer',
+                       display:'flex', flexDirection:'column', gap:2 },
+    searchItemLabel: { fontSize:12, fontWeight:600, color:'#fff' },
+    searchItemDept:  { fontSize:10, color:'#9ca3af' },
+    searchHint:      { fontSize:10, color:'#4b5563', margin:0, textAlign:'center', padding:'2px 0' },
+    clearSearch:     { background:'none', border:'none', color:'#6b7280',
+                       cursor:'pointer', fontSize:14, padding:'0 2px', flexShrink:0, lineHeight:1 },
 
     map:           { flex:1 },
 };
