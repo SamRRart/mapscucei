@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TERRA Civil — Ingeniería que Transforma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;1,300&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root {
+  --concrete: #111210;
+  --slab:     #1c1e1a;
+  --steel:    #2a2d28;
+  --yellow:   #f5a800;
+  --amber:    #e07b30;
+  --cyan:     #4fc3f7;
+  --white:    #f0ece2;
+  --ghost:    rgba(245,168,0,0.08);
+  --border:   rgba(245,168,0,0.18);
+  --muted:    #5a5d55;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--concrete);
+  color:var(--white);
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:300;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* CURSOR */
+.cur{width:10px;height:10px;background:var(--yellow);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:exclusion;transition:width .2s,height .2s;}
+.cur-ring{width:38px;height:38px;border:1.5px solid var(--yellow);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.4;transition:transform .18s ease;}
+body:has(a:hover) .cur{width:20px;height:20px;}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 3.5rem;
+  background:rgba(17,18,16,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-family:'Oswald',sans-serif;font-size:1.9rem;font-weight:700;letter-spacing:.12em;color:var(--white);}
+.logo em{color:var(--yellow);font-style:normal;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.12em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .3s;}
+.nav-links a:hover{color:var(--yellow);}
+.nav-btn{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.65rem 1.6rem;border:1.5px solid var(--yellow);color:var(--yellow);background:transparent;text-decoration:none;text-transform:uppercase;transition:all .3s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+.nav-btn:hover{background:var(--yellow);color:var(--concrete);}
+
+/* HERO */
+#hero{position:relative;height:100vh;overflow:hidden;display:flex;align-items:flex-end;}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;}
+.hero-content{
+  position:relative;z-index:10;
+  padding:0 4rem 5rem;
+  max-width:680px;
+}
+.hero-eyebrow{
+  font-family:'Share Tech Mono',monospace;
+  font-size:.68rem;letter-spacing:.3em;color:var(--yellow);
+  text-transform:uppercase;margin-bottom:1.2rem;
+  display:flex;align-items:center;gap:.8rem;
+}
+.hero-eyebrow::before{content:'';width:36px;height:1.5px;background:var(--yellow);}
+h1{
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(3.5rem,7vw,7.5rem);
+  font-weight:700;line-height:.93;
+  letter-spacing:.02em;
+  margin-bottom:1.5rem;
+  text-transform:uppercase;
+}
+h1 .y{color:var(--yellow);}
+h1 .a{color:var(--amber);}
+.hero-sub{font-size:1.05rem;line-height:1.7;color:rgba(240,236,226,.55);max-width:480px;margin-bottom:2.5rem;}
+.btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-p{padding:.9rem 2.2rem;background:var(--yellow);color:var(--concrete);font-family:'Oswald',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .3s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
+.btn-p:hover{background:#fff;transform:translateY(-2px);}
+.btn-g{padding:.9rem 2.2rem;border:1.5px solid rgba(240,236,226,.25);color:var(--white);font-family:'Oswald',sans-serif;font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .3s;}
+.btn-g:hover{border-color:var(--yellow);color:var(--yellow);}
+
+.crane-hint{
+  position:absolute;top:50%;right:4rem;transform:translateY(-50%);
+  z-index:15;
+  font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.15em;
+  color:rgba(245,168,0,.6);text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  animation:fadeHint 4s ease-in-out infinite;
+}
+.crane-hint svg{width:24px;opacity:.6;}
+@keyframes fadeHint{0%,100%{opacity:.3}50%{opacity:1}}
+
+.scroll-ind{
+  position:absolute;bottom:2rem;right:4rem;z-index:10;
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--muted);
+}
+.s-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--yellow),transparent);animation:sp 2s ease-in-out infinite;}
+@keyframes sp{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* TICKER */
+.ticker{background:var(--yellow);padding:.7rem 0;overflow:hidden;white-space:nowrap;}
+.ticker-inner{display:inline-flex;animation:tick 25s linear infinite;}
+.ticker-inner span{font-family:'Oswald',sans-serif;font-size:.9rem;font-weight:500;letter-spacing:.25em;color:var(--concrete);padding:0 2rem;text-transform:uppercase;}
+.ticker-inner .dot{color:var(--concrete);opacity:.4;font-size:1.1rem;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* STATS */
+#stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
+.stat{background:var(--slab);padding:3rem 2.5rem;border-left:3px solid transparent;transition:border-color .3s;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,168,0,.04),transparent);opacity:0;transition:opacity .3s;}
+.stat:hover{border-color:var(--yellow);}
+.stat:hover::before{opacity:1;}
+.sn{font-family:'Oswald',sans-serif;font-size:4rem;font-weight:700;color:var(--yellow);line-height:1;}
+.su{font-family:'Oswald',sans-serif;font-size:2.5rem;color:var(--amber);}
+.sl{font-size:.85rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em;}
+
+/* SECTIONS */
+section{padding:6rem 3.5rem;}
+.sec-label{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.3em;color:var(--yellow);text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.8rem;}
+.sec-label::after{content:'';flex:1;max-width:60px;height:1.5px;background:var(--yellow);}
+h2{font-family:'Oswald',sans-serif;font-size:clamp(2.2rem,4.5vw,4.5rem);font-weight:700;line-height:.95;letter-spacing:.03em;text-transform:uppercase;margin-bottom:1.5rem;}
+
+/* SERVICES */
+#services{background:var(--concrete);}
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:3.5rem;background:var(--border);}
+.srv{
+  background:var(--concrete);padding:2.8rem 2.2rem;position:relative;
+  overflow:hidden;transition:background .35s,transform .4s;
+  cursor:none;transform-style:preserve-3d;
+}
+.srv::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.srv:hover{background:var(--slab);}
+.srv:hover::after{transform:scaleX(1);}
+.srv-ico{width:60px;height:60px;margin-bottom:1.8rem;}
+.srv-ico svg{width:100%;height:100%;}
+.srv-n{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.2em;color:rgba(245,168,0,.55);margin-bottom:.8rem;}
+.srv-t{font-family:'Oswald',sans-serif;font-size:1.6rem;font-weight:600;letter-spacing:.04em;margin-bottom:.8rem;text-transform:uppercase;}
+.srv-d{font-size:.88rem;line-height:1.7;color:rgba(240,236,226,.45);}
+.srv-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.4rem;}
+.stag{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.08em;padding:.28rem .7rem;border:1px solid var(--border);color:var(--muted);text-transform:uppercase;transition:all .3s;}
+.srv:hover .stag{border-color:rgba(245,168,0,.35);color:var(--yellow);}
+
+/* BRIDGE SECTION */
+#bridge-sec{
+  background:var(--slab);
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  padding:0;min-height:560px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.bridge-info{padding:6rem 3.5rem;display:flex;flex-direction:column;justify-content:center;}
+#bridge-canvas{width:100%;height:100%;display:block;}
+
+/* TRENDS */
+#trends{background:var(--concrete);}
+.trend-list{display:flex;flex-direction:column;gap:1px;margin-top:3.5rem;background:var(--border);}
+.titem{
+  background:var(--concrete);
+  display:grid;grid-template-columns:70px 1fr auto;
+  align-items:center;gap:2rem;
+  padding:1.8rem 2.5rem;
+  border-left:3px solid transparent;
+  transition:all .3s;cursor:none;
+}
+.titem:hover{background:var(--slab);border-color:var(--yellow);}
+.tnum{font-family:'Oswald',sans-serif;font-size:3rem;font-weight:700;color:rgba(245,168,0,.12);transition:color .3s;line-height:1;}
+.titem:hover .tnum{color:var(--yellow);}
+.tname{font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem;}
+.tdesc{font-size:.85rem;color:rgba(240,236,226,.42);line-height:1.5;max-width:500px;}
+.tbadge{font-family:'Share Tech Mono',monospace;font-size:.6rem;padding:.35rem .9rem;letter-spacing:.1em;white-space:nowrap;}
+.hot{background:rgba(224,123,48,.12);border:1px solid var(--amber);color:var(--amber);}
+.new{background:rgba(79,195,247,.1);border:1px solid var(--cyan);color:var(--cyan);}
+.rise{background:rgba(245,168,0,.08);border:1px solid var(--yellow);color:var(--yellow);}
+
+/* PROJECTS */
+#projects{background:var(--slab);}
+.proj-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:1px;margin-top:3.5rem;background:var(--border);}
+.proj{background:var(--slab);padding:2.5rem;min-height:240px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;cursor:none;transition:background .3s;}
+.proj:hover{background:var(--steel);}
+.proj.big{grid-row:span 2;grid-column:span 1;min-height:480px;}
+.proj-yr{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.2em;color:rgba(245,168,0,.6);margin-bottom:.6rem;}
+.proj-t{font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;}
+.proj.big .proj-t{font-size:2.4rem;}
+.proj-l{font-size:.82rem;color:var(--muted);}
+.proj-arr{position:absolute;top:1.5rem;right:1.5rem;width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.1rem;transition:all .3s;}
+.proj:hover .proj-arr{border-color:var(--yellow);color:var(--yellow);}
+.proj-vis{margin-bottom:auto;height:150px;position:relative;}
+.big .proj-vis{height:240px;}
+
+/* CAPABILITIES BARS */
+#caps{background:var(--concrete);padding:6rem 3.5rem;}
+.caps-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-top:3.5rem;}
+.cap-bar{margin-bottom:1.8rem;}
+.cap-hdr{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.5rem;}
+.cap-track{height:2px;background:rgba(255,255,255,.05);}
+.cap-fill{height:100%;background:linear-gradient(to right,var(--yellow),var(--amber));transform:scaleX(0);transform-origin:left;transition:transform 1.4s cubic-bezier(.4,0,.2,1);}
+.cap-fill.go{transform:scaleX(1);}
+
+/* CTA */
+#cta{
+  background:var(--slab);
+  text-align:center;padding:8rem 3.5rem;
+  position:relative;overflow:hidden;
+  border-top:1px solid var(--border);
+}
+#cta::before{
+  content:'TERRA';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Oswald',sans-serif;font-size:18rem;font-weight:700;
+  color:rgba(245,168,0,.025);white-space:nowrap;pointer-events:none;
+  letter-spacing:.1em;
+}
+.cta-lbl{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.3em;color:var(--yellow);text-transform:uppercase;margin-bottom:1.2rem;}
+#cta h2{max-width:650px;margin:0 auto 1.2rem;}
+.cta-sub{font-size:1rem;color:rgba(240,236,226,.45);max-width:440px;margin:0 auto 3rem;line-height:1.7;}
+
+/* FOOTER */
+footer{background:var(--concrete);padding:2.5rem 3.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.flogo{font-family:'Oswald',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:.12em;}
+.flogo em{color:var(--yellow);font-style:normal;}
+.flinks{display:flex;gap:2rem;}
+.flinks a{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;transition:color .3s;}
+.flinks a:hover{color:var(--yellow);}
+.fcopy{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.08em;}
+
+/* REVEAL */
+.rev{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s;}
+.rev.on{opacity:1;transform:translateY(0);}
+
+/* LIVE DOT */
+.live{display:inline-flex;align-items:center;gap:.5rem;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:#6dd672;letter-spacing:.1em;}
+.live::before{content:'';width:6px;height:6px;background:#6dd672;border-radius:50%;animation:bl 1.5s ease-in-out infinite;}
+@keyframes bl{0%,100%{opacity:1;box-shadow:0 0 6px #6dd672}50%{opacity:.3;box-shadow:none}}
+
+.soil-legend{margin-top:2rem;display:flex;flex-direction:column;gap:.8rem;}
+.soil-row{display:flex;align-items:center;gap:1rem;font-size:.82rem;color:rgba(240,236,226,.55);}
+.soil-dot{width:12px;height:12px;border-radius:2px;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">TER<em>RA</em></div>
+  <ul class="nav-links">
+    <li><a href="#services">Servicios</a></li>
+    <li><a href="#bridge-sec">Estructuras</a></li>
+    <li><a href="#projects">Proyectos</a></li>
+    <li><a href="#trends">Tendencias</a></li>
+  </ul>
+  <a href="#cta" class="nav-btn">Consultoría</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="crane-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 5v14M5 12l7-7 7 7"/>
+    </svg>
+    <span>Mueve el mouse</span>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="live">Proyectos activos: 23</span>
+    </div>
+    <h1>
+      INGENIERÍA<br>
+      <span class="y">CIVIL</span><br>
+      DE <span class="a">ALTO</span><br>
+      IMPACTO
+    </h1>
+    <p class="hero-sub">Diseñamos y construimos la infraestructura que conecta ciudades, sostiene puentes y transforma territorios. Precisión estructural desde el subsuelo hasta el último trazo.</p>
+    <div class="btns">
+      <a href="#projects" class="btn-p">Ver Obras</a>
+      <a href="#cta" class="btn-g">Hablar con Ingenieros</a>
+    </div>
+  </div>
+  <div class="scroll-ind"><span>Scroll</span><div class="s-line"></div></div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Estructuras</span><span class="dot">◆</span>
+    <span>Cimentaciones Profundas</span><span class="dot">◆</span>
+    <span>Puentes & Viaductos</span><span class="dot">◆</span>
+    <span>Mecánica de Suelos</span><span class="dot">◆</span>
+    <span>Obras Hidráulicas</span><span class="dot">◆</span>
+    <span>Carreteras & Autopistas</span><span class="dot">◆</span>
+    <span>BIM 8D</span><span class="dot">◆</span>
+    <span>Digital Twin</span><span class="dot">◆</span>
+    <span>Concreto UHPC</span><span class="dot">◆</span>
+    <span>Monitoreo Sísmico</span><span class="dot">◆</span>
+    <span>Estructuras</span><span class="dot">◆</span>
+    <span>Cimentaciones Profundas</span><span class="dot">◆</span>
+    <span>Puentes & Viaductos</span><span class="dot">◆</span>
+    <span>Mecánica de Suelos</span><span class="dot">◆</span>
+    <span>Obras Hidráulicas</span><span class="dot">◆</span>
+    <span>Carreteras & Autopistas</span><span class="dot">◆</span>
+    <span>BIM 8D</span><span class="dot">◆</span>
+    <span>Digital Twin</span><span class="dot">◆</span>
+    <span>Concreto UHPC</span><span class="dot">◆</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div id="stats" class="rev">
+  <div class="stat"><div class="sn" data-t="187">0</div><span class="su">+</span><div class="sl">Proyectos completados</div></div>
+  <div class="stat"><div class="sn" data-t="14">0</div><span class="su">años</span><div class="sl">De experiencia estructural</div></div>
+  <div class="stat"><div class="sn" data-t="98">0</div><span class="su">%</span><div class="sl">Índice de satisfacción</div></div>
+  <div class="stat"><div class="sn" data-t="42">0</div><span class="su">k</span><div class="sl">Toneladas de acero supervisadas</div></div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="sec-label rev">Especialidades</div>
+  <h2 class="rev">LO QUE<br><span style="color:var(--yellow)">HACEMOS</span></h2>
+  <div class="srv-grid">
+
+    <!-- 01 Estructuras -->
+    <div class="srv rev">
+      <div class="srv-ico">
+        <!-- Isometric 3D steel frame -->
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5a800"/><stop offset="100%" stop-color="#c47a00"/></linearGradient>
+            <linearGradient id="g1b" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e07b30"/><stop offset="100%" stop-color="#8a4010"/></linearGradient>
+            <linearGradient id="g1c" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f5c84a"/><stop offset="100%" stop-color="#f5a800"/></linearGradient>
+          </defs>
+          <!-- Isometric building frame - front left column -->
+          <polygon points="8,52 8,20 12,18 12,50" fill="url(#g1a)"/>
+          <!-- front right column -->
+          <polygon points="38,52 38,20 42,18 42,50" fill="url(#g1a)"/>
+          <!-- top beam front -->
+          <polygon points="8,20 38,20 42,18 12,18" fill="url(#g1c)"/>
+          <!-- floor slab -->
+          <polygon points="8,38 38,38 42,36 12,36" fill="url(#g1c)" opacity=".75"/>
+          <!-- right face top beam -->
+          <polygon points="38,20 52,12 52,14 42,18" fill="url(#g1b)"/>
+          <!-- right face floor -->
+          <polygon points="38,38 52,30 52,32 42,36" fill="url(#g1b)" opacity=".75"/>
+          <!-- right face right column -->
+          <polygon points="52,12 52,50 50,52 50,14" fill="url(#g1b)"/>
+          <!-- diagonal brace left face -->
+          <line x1="8" y1="52" x2="38" y2="20" stroke="#f5a800" stroke-width="1" opacity=".4"/>
+          <!-- diagonal brace right face -->
+          <line x1="42" y1="50" x2="50" y2="14" stroke="#e07b30" stroke-width="1" opacity=".4"/>
+          <!-- back column visible -->
+          <line x1="12" y1="18" x2="52" y2="12" stroke="rgba(245,168,0,.5)" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="srv-n">01 — Especialidad</div>
+      <div class="srv-t">Diseño Estructural</div>
+      <div class="srv-d">Análisis y diseño de estructuras en concreto reforzado, acero estructural y sistemas híbridos. Modelado no lineal, análisis sísmico dinámico y optimización topológica.</div>
+      <div class="srv-tags"><span class="stag">ETABS</span><span class="stag">SAP2000</span><span class="stag">AISC</span></div>
+    </div>
+
+    <!-- 02 Geotecnia -->
+    <div class="srv rev">
+      <div class="srv-ico">
+        <!-- Isometric soil core drill -->
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g2top" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e07b30" stop-opacity=".9"/><stop offset="100%" stop-color="#a04a10"/></linearGradient>
+          </defs>
+          <!-- Soil core cylinder cross section (ellipse top + rect body) -->
+          <!-- Layer 1 - topsoil (dark) -->
+          <path d="M20,12 Q30,8 40,12 L40,20 Q30,24 20,20 Z" fill="#3a3020"/>
+          <path d="M20,12 Q30,16 40,12" stroke="#5a4a30" stroke-width=".8" fill="none"/>
+          <!-- Layer 2 - sandy clay (amber) -->
+          <path d="M20,20 Q30,24 40,20 L40,30 Q30,34 20,30 Z" fill="#9a7040"/>
+          <path d="M20,20 Q30,24 40,20" stroke="#c49060" stroke-width=".8" fill="none"/>
+          <!-- Layer 3 - rock (gray) -->
+          <path d="M20,30 Q30,34 40,30 L40,42 Q30,46 20,42 Z" fill="#505555"/>
+          <path d="M20,30 Q30,34 40,30" stroke="#707575" stroke-width=".8" fill="none"/>
+          <!-- Layer 4 - bedrock (dark blue-gray) -->
+          <path d="M20,42 Q30,46 40,42 L40,52 Q30,56 20,52 Z" fill="#2a3535"/>
+          <path d="M20,42 Q30,46 40,42" stroke="#4a5555" stroke-width=".8" fill="none"/>
+          <!-- Core barrel left side -->
+          <path d="M20,12 L20,52 Q30,56 40,52 L40,12" fill="none" stroke="rgba(245,168,0,.25)" stroke-width="1"/>
+          <!-- Drill bit at bottom -->
+          <path d="M26,52 L28,58 M34,52 L32,58" stroke="#f5a800" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Crack marks in rock layer -->
+          <line x1="24" y1="34" x2="28" y2="38" stroke="#6a7070" stroke-width=".7" opacity=".6"/>
+          <line x1="34" y1="32" x2="30" y2="36" stroke="#6a7070" stroke-width=".7" opacity=".6"/>
+          <!-- Top cap -->
+          <ellipse cx="30" cy="12" rx="10" ry="3.5" fill="#f5a800" opacity=".85"/>
+          <ellipse cx="30" cy="12" rx="10" ry="3.5" fill="none" stroke="#f5a800" stroke-width=".8"/>
+        </svg>
+      </div>
+      <div class="srv-n">02 — Especialidad</div>
+      <div class="srv-t">Geotecnia</div>
+      <div class="srv-d">Estudios de mecánica de suelos, cimentaciones profundas y superficiales, pilotes de concreto y hincados, mejoramiento de suelos y estabilidad de taludes.</div>
+      <div class="srv-tags"><span class="stag">Plaxis</span><span class="stag">FHWA</span><span class="stag">NTC-Geotech</span></div>
+    </div>
+
+    <!-- 03 Carreteras -->
+    <div class="srv rev">
+      <div class="srv-ico">
+        <!-- Isometric highway -->
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g3road" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#1a1a1a"/></linearGradient>
+            <linearGradient id="g3top" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3a3a3a"/><stop offset="100%" stop-color="#2a2a2a"/></linearGradient>
+          </defs>
+          <!-- Road surface (front face) -->
+          <polygon points="6,54 54,54 54,38 6,38" fill="url(#g3road)"/>
+          <!-- Road top face (isometric) -->
+          <polygon points="6,38 20,30 58,30 54,38" fill="url(#g3top)"/>
+          <!-- Road markings - center lines -->
+          <line x1="30" y1="38" x2="30" y2="54" stroke="#f5a800" stroke-width="1.2" stroke-dasharray="5,3"/>
+          <!-- Road shoulder lines -->
+          <line x1="14" y1="38" x2="14" y2="54" stroke="#f0ece2" stroke-width=".8" opacity=".5"/>
+          <line x1="46" y1="38" x2="46" y2="54" stroke="#f0ece2" stroke-width=".8" opacity=".5"/>
+          <!-- Top face markings -->
+          <line x1="38" y1="30" x2="30" y2="38" stroke="#f5a800" stroke-width="1.2" stroke-dasharray="4,2.5"/>
+          <!-- Embankment left -->
+          <polygon points="2,58 6,38 6,54" fill="#4a5040" opacity=".8"/>
+          <!-- Embankment right -->
+          <polygon points="58,58 54,38 54,54" fill="#3a4035" opacity=".8"/>
+          <!-- Guardrail posts -->
+          <line x1="6" y1="36" x2="6" y2="42" stroke="#e07b30" stroke-width="2"/>
+          <line x1="20" y1="28" x2="20" y2="34" stroke="#e07b30" stroke-width="2"/>
+          <line x1="54" y1="36" x2="54" y2="42" stroke="#e07b30" stroke-width="2"/>
+          <!-- Rail cable -->
+          <line x1="6" y1="38" x2="54" y2="38" stroke="#e07b30" stroke-width=".8"/>
+          <line x1="20" y1="30" x2="58" y2="30" stroke="#e07b30" stroke-width=".8"/>
+        </svg>
+      </div>
+      <div class="srv-n">03 — Especialidad</div>
+      <div class="srv-t">Carreteras</div>
+      <div class="srv-d">Proyecto geométrico y estructural de carreteras, autopistas y libramientos. Pavimentos flexibles y rígidos, drenajes, señalización y seguridad vial bajo norma SCT.</div>
+      <div class="srv-tags"><span class="stag">SCT</span><span class="stag">AASHTO</span><span class="stag">AutoCAD Civil</span></div>
+    </div>
+
+    <!-- 04 Obras Hidráulicas -->
+    <div class="srv rev">
+      <div class="srv-ico">
+        <!-- Isometric dam -->
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g4dam" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5a5e58"/><stop offset="100%" stop-color="#3a3e38"/></linearGradient>
+            <linearGradient id="g4wat" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a4a6a" stop-opacity=".9"/><stop offset="100%" stop-color="#0a2a4a" stop-opacity=".9"/></linearGradient>
+            <linearGradient id="g4top" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7a7e78"/><stop offset="100%" stop-color="#5a5e58"/></linearGradient>
+          </defs>
+          <!-- Water (reservoir left side) -->
+          <polygon points="4,50 4,28 28,20 28,42" fill="url(#g4wat)"/>
+          <!-- Water ripples -->
+          <path d="M6,34 Q14,31 22,34" stroke="#4fc3f7" stroke-width=".8" fill="none" opacity=".5"/>
+          <path d="M6,40 Q14,37 22,40" stroke="#4fc3f7" stroke-width=".8" fill="none" opacity=".4"/>
+          <!-- Dam body front face -->
+          <polygon points="28,20 28,54 50,54 50,28" fill="url(#g4dam)"/>
+          <!-- Dam body top face (isometric) -->
+          <polygon points="16,14 28,20 50,28 38,22" fill="url(#g4top)"/>
+          <!-- Dam steps/spillway -->
+          <line x1="28" y1="30" x2="50" y2="30" stroke="rgba(245,168,0,.25)" stroke-width=".8"/>
+          <line x1="28" y1="38" x2="50" y2="38" stroke="rgba(245,168,0,.25)" stroke-width=".8"/>
+          <line x1="28" y1="46" x2="50" y2="46" stroke="rgba(245,168,0,.25)" stroke-width=".8"/>
+          <!-- Spillway gate -->
+          <rect x="34" y="42" width="8" height="6" fill="#f5a800" opacity=".6"/>
+          <rect x="36" y="40" width="4" height="2" fill="#e07b30" opacity=".8"/>
+          <!-- Water outlet flow -->
+          <path d="M50,48 Q54,50 58,54" stroke="#4fc3f7" stroke-width="1.5" fill="none" opacity=".7"/>
+          <!-- Mountains behind -->
+          <polygon points="4,28 10,18 16,22 16,14" fill="#2a2e2a" opacity=".6"/>
+        </svg>
+      </div>
+      <div class="srv-n">04 — Especialidad</div>
+      <div class="srv-t">Obras Hidráulicas</div>
+      <div class="srv-d">Presas, bordos, canales y redes hidráulicas. Modelación de inundaciones con HEC-RAS, diseño de estructuras de control y vertedores bajo normas CONAGUA.</div>
+      <div class="srv-tags"><span class="stag">HEC-RAS</span><span class="stag">CONAGUA</span><span class="stag">SWMM</span></div>
+    </div>
+
+    <!-- 05 Puentes -->
+    <div class="srv rev">
+      <div class="srv-ico">
+        <!-- Isometric cable-stayed bridge -->
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g5deck" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4fc3f7" stop-opacity=".8"/><stop offset="100%" stop-color="#2a80a0" stop-opacity=".8"/></linearGradient>
+          </defs>
+          <!-- Bridge deck (front face) -->
+          <polygon points="4,42 56,42 56,38 4,38" fill="url(#g5deck)"/>
+          <!-- Deck top (isometric) -->
+          <polygon points="4,38 10,34 62,34 56,38" fill="rgba(79,195,247,.5)"/>
+          <!-- Left tower -->
+          <line x1="16" y1="54" x2="16" y2="16" stroke="#4fc3f7" stroke-width="2.5"/>
+          <!-- Right tower -->
+          <line x1="44" y1="54" x2="44" y2="16" stroke="#4fc3f7" stroke-width="2.5"/>
+          <!-- Tower cross bars -->
+          <line x1="13" y1="26" x2="19" y2="26" stroke="#4fc3f7" stroke-width="1.5"/>
+          <line x1="41" y1="26" x2="47" y2="26" stroke="#4fc3f7" stroke-width="1.5"/>
+          <!-- Stay cables from left tower -->
+          <line x1="16" y1="18" x2="4" y2="38" stroke="#f5a800" stroke-width=".9" opacity=".85"/>
+          <line x1="16" y1="18" x2="8" y2="38" stroke="#f5a800" stroke-width=".9" opacity=".85"/>
+          <line x1="16" y1="18" x2="26" y2="38" stroke="#f5a800" stroke-width=".9" opacity=".85"/>
+          <line x1="16" y1="18" x2="32" y2="38" stroke="#f5a800" stroke-width=".9" opacity=".85"/>
+          <!-- Stay cables from right tower -->
+          <line x1="44" y1="18" x2="56" y2="38" stroke="#e07b30" stroke-width=".9" opacity=".85"/>
+          <line x1="44" y1="18" x2="52" y2="38" stroke="#e07b30" stroke-width=".9" opacity=".85"/>
+          <line x1="44" y1="18" x2="34" y2="38" stroke="#e07b30" stroke-width=".9" opacity=".85"/>
+          <line x1="44" y1="18" x2="28" y2="38" stroke="#e07b30" stroke-width=".9" opacity=".85"/>
+          <!-- Water below -->
+          <rect x="4" y="44" width="52" height="6" fill="#1a3a5a" opacity=".7" rx="1"/>
+          <line x1="10" y1="47" x2="24" y2="47" stroke="#4fc3f7" stroke-width=".6" opacity=".4"/>
+          <line x1="36" y1="47" x2="52" y2="47" stroke="#4fc3f7" stroke-width=".6" opacity=".4"/>
+        </svg>
+      </div>
+      <div class="srv-n">05 — Especialidad</div>
+      <div class="srv-t">Puentes & Viaductos</div>
+      <div class="srv-d">Diseño de puentes en concreto presforzado, acero y mixtos. Análisis de cargas vehiculares, sísmicas y de viento. Supervisión de obra e instrumentación estructural.</div>
+      <div class="srv-tags"><span class="stag">AASHTO LRFD</span><span class="stag">CSiBridge</span><span class="stag">SCT</span></div>
+    </div>
+
+    <!-- 06 Infraestructura Urbana -->
+    <div class="srv rev">
+      <div class="srv-ico">
+        <!-- Isometric city block -->
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g6b1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4fc3f7" stop-opacity=".25"/><stop offset="100%" stop-color="#2a80a0" stop-opacity=".25"/></linearGradient>
+            <linearGradient id="g6b2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4fc3f7" stop-opacity=".15"/><stop offset="100%" stop-color="#2a80a0" stop-opacity=".15"/></linearGradient>
+          </defs>
+          <!-- Road grid -->
+          <rect x="2" y="2" width="56" height="56" fill="#1a1c18" rx="1"/>
+          <rect x="22" y="2" width="8" height="56" fill="#2a2c28" opacity=".6"/>
+          <rect x="2" y="22" width="56" height="8" fill="#2a2c28" opacity=".6"/>
+          <!-- Block A - tall building -->
+          <rect x="4" y="4" width="16" height="16" fill="#2a2e2a"/>
+          <line x1="8" y1="4" x2="8" y2="20" stroke="rgba(79,195,247,.3)" stroke-width=".8"/>
+          <line x1="12" y1="4" x2="12" y2="20" stroke="rgba(79,195,247,.3)" stroke-width=".8"/>
+          <line x1="16" y1="4" x2="16" y2="20" stroke="rgba(79,195,247,.3)" stroke-width=".8"/>
+          <line x1="4" y1="8" x2="20" y2="8" stroke="rgba(79,195,247,.3)" stroke-width=".8"/>
+          <line x1="4" y1="12" x2="20" y2="12" stroke="rgba(79,195,247,.3)" stroke-width=".8"/>
+          <line x1="4" y1="16" x2="20" y2="16" stroke="rgba(79,195,247,.3)" stroke-width=".8"/>
+          <!-- Block B - medium building -->
+          <rect x="32" y="4" width="24" height="16" fill="#2a3030"/>
+          <rect x="32" y="4" width="24" height="16" fill="url(#g6b1)"/>
+          <!-- Block C -->
+          <rect x="4" y="32" width="16" height="24" fill="#252822"/>
+          <rect x="32" y="32" width="24" height="24" fill="#303428"/>
+          <!-- Road markings -->
+          <line x1="26" y1="4" x2="26" y2="20" stroke="rgba(245,168,0,.4)" stroke-width=".7" stroke-dasharray="3,3"/>
+          <line x1="4" y1="26" x2="20" y2="26" stroke="rgba(245,168,0,.4)" stroke-width=".7" stroke-dasharray="3,3"/>
+          <!-- Pipe network overlay -->
+          <path d="M22,10 L32,10" stroke="#4fc3f7" stroke-width=".8" stroke-dasharray="2,2" opacity=".6"/>
+          <path d="M40,22 L40,32" stroke="#4fc3f7" stroke-width=".8" stroke-dasharray="2,2" opacity=".6"/>
+        </svg>
+      </div>
+      <div class="srv-n">06 — Especialidad</div>
+      <div class="srv-t">Infraestructura Urbana</div>
+      <div class="srv-d">Redes de agua potable, drenaje sanitario y pluvial, pavimentos urbanos y alumbrado. Proyectos integrales de urbanización con BIM y modelos de Digital Twin municipal.</div>
+      <div class="srv-tags"><span class="stag">WaterGEMS</span><span class="stag">BIM 8D</span><span class="stag">GIS Urban</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BRIDGE 3D SECTION -->
+<section id="bridge-sec">
+  <div class="bridge-info rev">
+    <div class="sec-label">Ingeniería de Puentes</div>
+    <h2>ESTRUCTURAS<br><span style="color:var(--yellow)">QUE UNEN</span></h2>
+    <p style="color:rgba(240,236,226,.5);line-height:1.7;margin-bottom:2rem;max-width:400px;">
+      Nuestros puentes diseñados bajo AASHTO LRFD y NTC integran monitoreo estructural en tiempo real con sensores acelerométricos y de deformación, conectados a gemelos digitales activos.
+    </p>
+    <div class="soil-legend">
+      <div class="soil-row"><div class="soil-dot" style="background:#4fc3f7"></div>Tablero de concreto presforzado</div>
+      <div class="soil-row"><div class="soil-dot" style="background:#f5a800"></div>Vigas de alma abierta en acero</div>
+      <div class="soil-row"><div class="soil-dot" style="background:#e07b30"></div>Cables de pretensado y tensores</div>
+      <div class="soil-row"><div class="soil-dot" style="background:#6dd672"></div>Pilares y estribos en concreto</div>
+    </div>
+    <div style="margin-top:2rem;"><div class="live">Monitoreo estructural activo</div></div>
+  </div>
+  <canvas id="bridge-canvas"></canvas>
+</section>
+
+<!-- CAPABILITIES -->
+<section id="caps">
+  <div class="sec-label">Capacidades técnicas</div>
+  <h2>DOMINIO<br><span style="color:var(--yellow)">TÉCNICO</span></h2>
+  <div class="caps-grid">
+    <div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Diseño Estructural Avanzado</span><span>97%</span></div><div class="cap-track"><div class="cap-fill" data-w=".97"></div></div></div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>BIM / Modelado 3D</span><span>94%</span></div><div class="cap-track"><div class="cap-fill" data-w=".94"></div></div></div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Geotecnia & Mecánica de Suelos</span><span>92%</span></div><div class="cap-track"><div class="cap-fill" data-w=".92"></div></div></div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Diseño Hidráulico</span><span>89%</span></div><div class="cap-track"><div class="cap-fill" data-w=".89"></div></div></div>
+    </div>
+    <div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Ingeniería de Puentes</span><span>96%</span></div><div class="cap-track"><div class="cap-fill" data-w=".96"></div></div></div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Supervisión de Obra</span><span>99%</span></div><div class="cap-track"><div class="cap-fill" data-w=".99"></div></div></div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Diseño Sísmico Probabilístico</span><span>91%</span></div><div class="cap-track"><div class="cap-fill" data-w=".91"></div></div></div>
+      <div class="cap-bar rev"><div class="cap-hdr"><span>Digital Twin & IoT Estructural</span><span>85%</span></div><div class="cap-track"><div class="cap-fill" data-w=".85"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDS -->
+<section id="trends">
+  <div class="sec-label">Radar 2024–2026</div>
+  <h2>TENDENCIAS QUE<br><span style="color:var(--yellow)">REDEFINEN</span><br>LA CIVIL</h2>
+  <div class="trend-list">
+    <div class="titem rev">
+      <div class="tnum">01</div>
+      <div><div class="tname">Concreto UHPC & Materiales Reciclados</div><div class="tdesc">El Ultra High Performance Concrete (resistencias >150 MPa) y áridos reciclados están reemplazando concreto convencional en puentes y estructuras de largo plazo.</div></div>
+      <div class="tbadge hot">🔥 VIRAL</div>
+    </div>
+    <div class="titem rev">
+      <div class="tnum">02</div>
+      <div><div class="tname">BIM 8D + Gemelos Digitales en Infraestructura Vial</div><div class="tdesc">Modelos BIM que integran costo, tiempo, sostenibilidad y mantenimiento predictivo. Las agencias de carreteras exigen BIM en contratos de >$5M USD desde 2024.</div></div>
+      <div class="tbadge hot">🔥 VIRAL</div>
+    </div>
+    <div class="titem rev">
+      <div class="tnum">03</div>
+      <div><div class="tname">Monitoreo Estructural con IoT & Drones LiDAR</div><div class="tdesc">Redes de sensores acelerométricos, fibra óptica distribuida y drones de inspección autónoma permiten detectar fallas estructurales con meses de anticipación.</div></div>
+      <div class="tbadge rise">↑ CRECIENDO</div>
+    </div>
+    <div class="titem rev">
+      <div class="tnum">04</div>
+      <div><div class="tname">Accelerated Bridge Construction (ABC)</div><div class="tdesc">Construcción acelerada de puentes con módulos prefabricados. Reduce cierres viales de meses a días. FHWA lo impulsa como estándar en autopistas de alta demanda.</div></div>
+      <div class="tbadge new">✦ EMERGENTE</div>
+    </div>
+    <div class="titem rev">
+      <div class="tnum">05</div>
+      <div><div class="tname">Diseño Sísmico Basado en Desempeño (PBEE)</div><div class="tdesc">Nuevas normativas en México, Chile y Colombia adoptan el diseño probabilístico que cuantifica pérdidas esperadas y tiempo de recuperación tras sismos extremos.</div></div>
+      <div class="tbadge rise">↑ CRECIENDO</div>
+    </div>
+    <div class="titem rev">
+      <div class="tnum">06</div>
+      <div><div class="tname">Infraestructura Resiliente al Cambio Climático</div><div class="tdesc">Diseño de carreteras, puentes y drenajes incorporando escenarios de lluvia extrema al 2080 del IPCC. Nuevos contratos públicos en LATAM ya lo exigen en TDR.</div></div>
+      <div class="tbadge new">✦ EMERGENTE</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-label">Portfolio</div>
+  <h2>OBRAS QUE<br><span style="color:var(--amber)">PERDURAN</span></h2>
+  <div class="proj-grid">
+    <div class="proj big rev">
+      <div class="proj-vis" id="proj3d"></div>
+      <div class="proj-arr">↗</div>
+      <div class="proj-yr">2024 — Puente Atirantado</div>
+      <div class="proj-t">Puente Mezcala II</div>
+      <div class="proj-l">Guerrero, México · 890m · Concreto presforzado</div>
+    </div>
+    <div class="proj rev">
+      <div class="proj-arr">↗</div>
+      <div class="proj-yr">2024 — Autopista</div>
+      <div class="proj-t">Libramiento Manzanillo</div>
+      <div class="proj-l">Colima, MX · 42km · 4 carriles</div>
+    </div>
+    <div class="proj rev">
+      <div class="proj-arr">↗</div>
+      <div class="proj-yr">2025 — Hidráulico</div>
+      <div class="proj-t">Presa El Naranjo</div>
+      <div class="proj-l">Jalisco, MX · 85M m³ capacidad</div>
+    </div>
+    <div class="proj rev">
+      <div class="proj-arr">↗</div>
+      <div class="proj-yr">2025 — Geotecnia</div>
+      <div class="proj-t">Cimentación Torre Distrito</div>
+      <div class="proj-l">Guadalajara, MX · 420 pilotes · 54 pisos</div>
+    </div>
+    <div class="proj rev">
+      <div class="proj-arr">↗</div>
+      <div class="proj-yr">2026 — En Curso</div>
+      <div class="proj-t">Viaducto Tren Maya Tramo 6</div>
+      <div class="proj-l">Yucatán, MX · 18km · Estructuras especiales</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-lbl">¿Tienes un proyecto?</div>
+  <h2>CONSTRUYAMOS<br><span style="color:var(--yellow)">JUNTOS</span><br>EL FUTURO</h2>
+  <p class="cta-sub">Desde el estudio geotécnico hasta la última viga. Nuestro equipo de ingenieros especializados está listo para convertir tu proyecto en realidad.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <a href="#" class="btn-p">Solicitar Cotización</a>
+    <a href="#" class="btn-g">Descargar Portafolio</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="flogo">TER<em>RA</em> Ingeniería Civil</div>
+  <div class="flinks">
+    <a href="#">LinkedIn</a><a href="#">Proyectos</a><a href="#">Normativas</a><a href="#">Carreras</a>
+  </div>
+  <div class="fcopy">© 2026 TERRA · Guadalajara, Jalisco, MX</div>
+</footer>
+
+<script>
+/* ===== CURSOR ===== */
+const cur = document.getElementById('cur');
+const curR = document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function animCur(){
+  rx+=(mx-rx)*.14; ry+=(my-ry)*.14;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  curR.style.left=rx+'px'; curR.style.top=ry+'px';
+  requestAnimationFrame(animCur);
+})();
+
+/* ===== SERVICE CARD TILT ===== */
+document.querySelectorAll('.srv').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(600px) rotateY(${x*8}deg) rotateX(${-y*6}deg) translateZ(4px)`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+});
+
+/* ══════════════════════════════════════════════════
+   HERO — THREE.JS  (grúa de celosía ultra-realista)
+══════════════════════════════════════════════════ */
+const hCanvas = document.getElementById('hero-canvas');
+const hRenderer = new THREE.WebGLRenderer({canvas:hCanvas,antialias:true,alpha:false});
+hRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+hRenderer.setSize(innerWidth,innerHeight);
+hRenderer.shadowMap.enabled = true;
+hRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+hRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+hRenderer.toneMappingExposure = 1.15;
+hRenderer.outputEncoding = THREE.sRGBEncoding;
+
+const hScene = new THREE.Scene();
+hScene.background = new THREE.Color(0x0b0d0a);
+hScene.fog = new THREE.Fog(0x0b0d0a, 32, 90);
+
+const hCam = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 200);
+hCam.position.set(-5, 9, 22);
+hCam.lookAt(0, 5, 0);
+
+/* --- LIGHTS --- */
+hScene.add(new THREE.AmbientLight(0xffeedd, 0.38));
+
+const sunL = new THREE.DirectionalLight(0xfff5cc, 1.8);
+sunL.position.set(14, 28, 12);
+sunL.castShadow = true;
+sunL.shadow.mapSize.set(2048,2048);
+sunL.shadow.camera.near = 0.5;
+sunL.shadow.camera.far = 80;
+sunL.shadow.camera.left = -30;
+sunL.shadow.camera.right = 30;
+sunL.shadow.camera.top = 30;
+sunL.shadow.camera.bottom = -30;
+sunL.shadow.bias = -0.0015;
+hScene.add(sunL);
+
+const coolL = new THREE.PointLight(0x4fc3f7, 0.65, 55);
+coolL.position.set(-10, 16, 8);
+hScene.add(coolL);
+
+const warmL = new THREE.PointLight(0xff8c30, 1.3, 22);
+warmL.position.set(3, 2, 7);
+hScene.add(warmL);
+
+const rimL = new THREE.DirectionalLight(0x336688, 0.5);
+rimL.position.set(-8, 6, -15);
+hScene.add(rimL);
+
+/* --- MATERIALS (PBR físicos) --- */
+const mYellow = new THREE.MeshPhysicalMaterial({
+  color:0xf5a800, roughness:0.22, metalness:0.88,
+  clearcoat:0.65, clearcoatRoughness:0.18
+});
+const mOrange = new THREE.MeshPhysicalMaterial({
+  color:0xe07b30, roughness:0.28, metalness:0.82,
+  clearcoat:0.45
+});
+const mSteel = new THREE.MeshPhysicalMaterial({
+  color:0x2c3030, roughness:0.32, metalness:0.92,
+  clearcoat:0.25
+});
+const mSteelBright = new THREE.MeshPhysicalMaterial({
+  color:0x686c68, roughness:0.18, metalness:0.95,
+  clearcoat:0.5
+});
+const mRebar = new THREE.MeshPhysicalMaterial({
+  color:0x484844, roughness:0.78, metalness:0.75
+});
+
+// Concrete texture via canvas
+const cCtx2d = document.createElement('canvas');
+cCtx2d.width = cCtx2d.height = 256;
+const c2 = cCtx2d.getContext('2d');
+c2.fillStyle='#545850'; c2.fillRect(0,0,256,256);
+for(let i=0;i<4000;i++){
+  const x=Math.random()*256,y=Math.random()*256;
+  const v=Math.floor(Math.random()*35)-17;
+  const b=86+v; c2.fillStyle=`rgb(${b},${b+2},${b-2})`;
+  c2.fillRect(x,y,2+Math.random()*2,2);
+}
+const mConcrete = new THREE.MeshStandardMaterial({
+  map:new THREE.CanvasTexture(cCtx2d),
+  roughness:0.94, metalness:0.0
+});
+
+const mWood = new THREE.MeshStandardMaterial({color:0x8b6840,roughness:0.92,metalness:0.0});
+const mGlass = new THREE.MeshPhysicalMaterial({
+  color:0x88b8cc,roughness:0.06,metalness:0.0,
+  transparent:true,opacity:0.45
+});
+
+/* --- HELPER: cilindro entre dos puntos 3D --- */
+function tube(p0,p1,r,mat,shadows=true){
+  const d=new THREE.Vector3().subVectors(p1,p0);
+  const l=d.length();
+  if(l<0.001)return null;
+  const mid=new THREE.Vector3().addVectors(p0,p1).multiplyScalar(0.5);
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,l,8),mat);
+  m.position.copy(mid);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
+  if(shadows){m.castShadow=true;m.receiveShadow=true;}
+  return m;
+}
+
+/* --- SUELO con textura de sitio de obra --- */
+const gCv=document.createElement('canvas');
+gCv.width=gCv.height=1024;
+const gC=gCv.getContext('2d');
+gC.fillStyle='#141610'; gC.fillRect(0,0,1024,1024);
+for(let i=0;i<12000;i++){
+  const x=Math.random()*1024,y=Math.random()*1024;
+  const v=Math.random()*18;
+  gC.fillStyle=`rgba(${18+v},${20+v},${16+v},0.9)`;
+  gC.fillRect(x,y,2,2);
+}
+// Líneas de cuadrícula
+gC.strokeStyle='rgba(245,168,0,0.12)'; gC.lineWidth=2;
+for(let i=0;i<=8;i++){
+  gC.beginPath();gC.moveTo(i*128,0);gC.lineTo(i*128,1024);gC.stroke();
+  gC.beginPath();gC.moveTo(0,i*128);gC.lineTo(1024,i*128);gC.stroke();
+}
+// Huellas de llantas
+gC.strokeStyle='rgba(0,0,0,0.55)'; gC.lineWidth=9;
+gC.beginPath();gC.moveTo(180,0);gC.bezierCurveTo(200,350,280,680,340,1024);gC.stroke();
+gC.beginPath();gC.moveTo(210,0);gC.bezierCurveTo(230,350,305,680,365,1024);gC.stroke();
+
+const gTex=new THREE.CanvasTexture(gCv);
+gTex.wrapS=gTex.wrapT=THREE.RepeatWrapping; gTex.repeat.set(4,4);
+const ground=new THREE.Mesh(
+  new THREE.PlaneGeometry(100,100,60,60),
+  new THREE.MeshStandardMaterial({map:gTex,roughness:0.96,metalness:0.0})
+);
+ground.rotation.x=-Math.PI/2; ground.receiveShadow=true;
+hScene.add(ground);
+const gridH=new THREE.GridHelper(100,70,0x2a2d28,0x1c1e1a);
+gridH.material.opacity=0.25; gridH.material.transparent=true;
+hScene.add(gridH);
+
+/* ══════════════════
+   GRÚA TORRE (celosía real)
+══════════════════ */
+const craneGroup=new THREE.Group();
+hScene.add(craneGroup);
+
+// Función: construir mástil de celosía en Y
+function latticeMast(group,height,w,y0){
+  const hw=w/2;
+  const corners=[
+    new THREE.Vector3( hw,0, hw),
+    new THREE.Vector3( hw,0,-hw),
+    new THREE.Vector3(-hw,0,-hw),
+    new THREE.Vector3(-hw,0, hw)
+  ];
+  // 4 cordones verticales
+  corners.forEach(c=>{
+    const t=tube(new THREE.Vector3(c.x,y0,c.z),new THREE.Vector3(c.x,y0+height,c.z),0.045,mYellow);
+    if(t)group.add(t);
+  });
+  // Secciones con anillos horizontales + cruces en X
+  const secH=1.8, nSec=Math.ceil(height/secH);
+  for(let s=0;s<nSec;s++){
+    const ya=y0+s*secH;
+    const yb=Math.min(y0+height,ya+secH);
+    // Anillo inferior
+    for(let i=0;i<4;i++){
+      const a=corners[i],b=corners[(i+1)%4];
+      const t=tube(new THREE.Vector3(a.x,ya,a.z),new THREE.Vector3(b.x,ya,b.z),0.023,mOrange);
+      if(t)group.add(t);
+    }
+    // Cruz en X (cada cara)
+    for(let i=0;i<4;i++){
+      const a=corners[i],b=corners[(i+1)%4];
+      const t1=tube(new THREE.Vector3(a.x,ya,a.z),new THREE.Vector3(b.x,yb,b.z),0.018,mOrange);
+      const t2=tube(new THREE.Vector3(a.x,yb,a.z),new THREE.Vector3(b.x,ya,b.z),0.018,mOrange);
+      if(t1)group.add(t1); if(t2)group.add(t2);
+    }
+  }
+  // Anillo superior
+  for(let i=0;i<4;i++){
+    const a=corners[i],b=corners[(i+1)%4];
+    const t=tube(new THREE.Vector3(a.x,y0+height,a.z),new THREE.Vector3(b.x,y0+height,b.z),0.023,mOrange);
+    if(t)group.add(t);
+  }
+}
+
+// Función: construir pluma de celosía en X
+function latticeJib(group,length,h,w,x0,posY,mat1,mat2){
+  const hh=h/2,hw=w/2;
+  const pts=[
+    [posY+hh, hw],[posY+hh,-hw],[posY-hh,-hw],[posY-hh, hw]
+  ];
+  // 4 cordones longitudinales
+  pts.forEach(([y,z])=>{
+    const t=tube(new THREE.Vector3(x0,y,z),new THREE.Vector3(x0+length,y,z),0.033,mat1);
+    if(t)group.add(t);
+  });
+  const secL=1.4, nSec=Math.ceil(length/secL);
+  for(let s=0;s<nSec;s++){
+    const xa=x0+s*secL;
+    const xb=Math.min(x0+length,xa+secL);
+    // Anillo en X
+    for(let i=0;i<4;i++){
+      const [ya,za]=pts[i],[yb,zb]=pts[(i+1)%4];
+      const t=tube(new THREE.Vector3(xa,ya,za),new THREE.Vector3(xa,yb,zb),0.018,mat2);
+      if(t)group.add(t);
+    }
+    // Diagonal en cara superior e inferior
+    [[0,1],[2,3]].forEach(([a,b])=>{
+      const [ya,za]=pts[a],[yb,zb]=pts[b];
+      const d1=tube(new THREE.Vector3(xa,ya,za),new THREE.Vector3(xb,yb,zb),0.014,mat2);
+      const d2=tube(new THREE.Vector3(xa,yb,zb),new THREE.Vector3(xb,ya,za),0.014,mat2);
+      if(d1)group.add(d1); if(d2)group.add(d2);
+    });
+  }
+  // Anillo final
+  for(let i=0;i<4;i++){
+    const [ya,za]=pts[i],[yb,zb]=pts[(i+1)%4];
+    const t=tube(new THREE.Vector3(x0+length,ya,za),new THREE.Vector3(x0+length,yb,zb),0.018,mat2);
+    if(t)group.add(t);
+  }
+}
+
+// ─── BASE DE HORMIGÓN ───
+const base=new THREE.Mesh(new THREE.BoxGeometry(4.8,.65,4.8),mConcrete);
+base.position.set(0,.325,0); base.castShadow=base.receiveShadow=true;
+craneGroup.add(base);
+// Pernos de anclaje
+[-1.9,1.9].forEach(bx=>[-1.9,1.9].forEach(bz=>{
+  const bolt=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.5,8),mSteelBright);
+  bolt.position.set(bx,.8,bz); craneGroup.add(bolt);
+}));
+
+// ─── PLATO GIRATORIO ───
+const ttable=new THREE.Mesh(new THREE.CylinderGeometry(.7,.8,.38,16),mOrange);
+ttable.position.set(0,.85,0); craneGroup.add(ttable);
+
+// ─── MÁSTIL (celosía) ───
+latticeMast(craneGroup,11.5,.7,1.2);
+
+// Aro de trepado
+const climb=new THREE.Mesh(new THREE.TorusGeometry(.55,.04,8,20),mYellow);
+climb.position.set(0,2.0,0); craneGroup.add(climb);
+
+// ─── CABINA DEL OPERADOR ───
+const cab=new THREE.Mesh(new THREE.BoxGeometry(.95,.78,.8),mYellow);
+cab.position.set(-.48,10.45,0); cab.castShadow=true; craneGroup.add(cab);
+// Ventana
+const cabWin=new THREE.Mesh(new THREE.BoxGeometry(.05,.52,.58),mGlass);
+cabWin.position.set(-1.0,10.45,0); craneGroup.add(cabWin);
+
+// ─── CABEZAL ───
+const head=new THREE.Mesh(new THREE.BoxGeometry(.9,.75,.9),mOrange);
+head.position.set(0,12.15,0); head.castShadow=true; craneGroup.add(head);
+// Punta vertical
+const peak=tube(new THREE.Vector3(0,12.53,0),new THREE.Vector3(0,13.6,0),.055,mYellow);
+if(peak)craneGroup.add(peak);
+
+// ─── PLUMA PRINCIPAL (+X) ───
+const JX0=0.48, JL=9.6;
+latticeJib(craneGroup,JL,.38,.3,JX0,11.55,mYellow,mOrange);
+
+// ─── CONTRA-PLUMA (-X) ───
+const CL=3.6;
+latticeJib(craneGroup,CL,.3,.25,-0.48-CL,11.38,mYellow,mOrange);
+
+// Contrapeso
+const cw=new THREE.Mesh(new THREE.BoxGeometry(1.4,.95,.9),mConcrete);
+cw.position.set(-0.48-CL+.7,11.05,0); cw.castShadow=true; craneGroup.add(cw);
+
+// ─── CABLES DE SOPORTE (celosía aérea) ───
+const wireMat=new THREE.LineBasicMaterial({color:0xd4a855,transparent:true,opacity:.88});
+[
+  [new THREE.Vector3(0,13.5,0), new THREE.Vector3(JX0+JL,    11.55,0)],
+  [new THREE.Vector3(0,13.5,0), new THREE.Vector3(JX0+JL*.5, 11.55,0)],
+  [new THREE.Vector3(0,13.5,0), new THREE.Vector3(JX0+JL*.25,11.55,0)],
+  [new THREE.Vector3(0,13.5,0), new THREE.Vector3(-0.48-CL,  11.38,0)],
+].forEach(([a,b])=>{
+  craneGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),wireMat));
+});
+
+// ─── TROLLEY (carro) ───
+const trolleyGroup=new THREE.Group();
+trolleyGroup.position.set(3.5,11.55,0);
+craneGroup.add(trolleyGroup);
+const trolleyBody=new THREE.Mesh(new THREE.BoxGeometry(.48,.3,.4),mSteel);
+trolleyBody.castShadow=true; trolleyGroup.add(trolleyBody);
+// Ruedas del carro
+[-0.19,0.19].forEach(dz=>{
+  const w=new THREE.Mesh(new THREE.CylinderGeometry(.065,.065,.42,10),mSteelBright);
+  w.rotation.x=Math.PI/2; w.position.set(0,.09,dz); trolleyGroup.add(w);
+});
+
+// ─── GRUPO DEL GANCHO (péndulo físico) ───
+const hookGroup=new THREE.Group();
+hookGroup.position.set(3.5,11.55,0);
+craneGroup.add(hookGroup);
+
+// Cuerda metálica (4 hilos)
+const cableLen=4.2;
+[-0.04,0.04].forEach(off=>{
+  const ln=new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(off,0,0),new THREE.Vector3(off,-cableLen,0)]),
+    new THREE.LineBasicMaterial({color:0xc8a855})
+  );
+  hookGroup.add(ln);
+});
+
+// Caja de poleas
+const pBlock=new THREE.Mesh(new THREE.BoxGeometry(.35,.3,.22),mSteel);
+pBlock.position.set(0,-cableLen-.15,0); pBlock.castShadow=true; hookGroup.add(pBlock);
+// Polea (torus)
+const pulley=new THREE.Mesh(new THREE.TorusGeometry(.11,.022,8,16),mSteelBright);
+pulley.position.set(0,-cableLen-.15,0); pulley.rotation.y=Math.PI/2; hookGroup.add(pulley);
+
+// GANCHO REAL usando TubeGeometry sobre curva CatmullRom
+const hookCurve=new THREE.CatmullRomCurve3([
+  new THREE.Vector3(0,0,0),
+  new THREE.Vector3(.04,-.12,0),
+  new THREE.Vector3(.14,-.24,0),
+  new THREE.Vector3(.18,-.36,0),
+  new THREE.Vector3(.14,-.46,0),
+  new THREE.Vector3(.02,-.52,0),
+  new THREE.Vector3(-.12,-.48,0),
+  new THREE.Vector3(-.16,-.36,0),
+  new THREE.Vector3(-.08,-.26,0),
+]);
+const hookMesh=new THREE.Mesh(new THREE.TubeGeometry(hookCurve,24,.026,8,false),mSteelBright);
+hookMesh.position.set(0,-cableLen-.3,0); hookMesh.castShadow=true; hookGroup.add(hookMesh);
+
+// Anillo superior del gancho
+const hookRing=new THREE.Mesh(new THREE.TorusGeometry(.055,.018,8,12),mSteelBright);
+hookRing.position.set(0,-cableLen-.31,0); hookGroup.add(hookRing);
+
+// ─── CARTEL TERRA (colgando del gancho) ───
+const signCv=document.createElement('canvas');
+signCv.width=512; signCv.height=182;
+const sCtx=signCv.getContext('2d');
+sCtx.fillStyle='#1c1a14'; sCtx.fillRect(0,0,512,182);
+sCtx.strokeStyle='#f5a800'; sCtx.lineWidth=8; sCtx.strokeRect(4,4,504,174);
+sCtx.fillStyle='#f5a800';
+sCtx.fillRect(0,0,512,7); sCtx.fillRect(0,175,512,7);
+for(let i=0;i<7;i++){
+  sCtx.fillStyle=i%2===0?'#f5a800':'#1c1a14';
+  sCtx.fillRect(i*17,0,17,24); sCtx.fillRect(512-17-i*17,0,17,24);
+  sCtx.fillRect(i*17,158,17,24); sCtx.fillRect(512-17-i*17,158,17,24);
+}
+sCtx.fillStyle='#f0ece2';
+sCtx.font='bold 86px Oswald,Impact,sans-serif';
+sCtx.textAlign='center'; sCtx.textBaseline='middle';
+sCtx.fillText('TERRA',256,76);
+sCtx.fillStyle='#f5a800';
+sCtx.font='500 22px Oswald,Impact,sans-serif';
+sCtx.fillText('INGENIERÍA CIVIL',256,138);
+const signTex=new THREE.CanvasTexture(signCv);
+const sign=new THREE.Mesh(new THREE.BoxGeometry(2.9,.94,.07),
+  [mSteel,mSteel,mSteel,mSteel,
+   new THREE.MeshStandardMaterial({map:signTex,roughness:.7,metalness:.1}),
+   new THREE.MeshStandardMaterial({color:0x2a2820,roughness:.8})]
+);
+sign.position.set(0,-cableLen-.92,0); sign.castShadow=true; hookGroup.add(sign);
+// Pernos del cartel
+[-1.35,1.35].forEach(sx=>[-0.36,0.36].forEach(sy=>{
+  const bolt=new THREE.Mesh(new THREE.CylinderGeometry(.042,.042,.09,8),mSteelBright);
+  bolt.rotation.x=Math.PI/2; bolt.position.set(sx,sy-cableLen-.92,.09); hookGroup.add(bolt);
+}));
+
+/* ══════════════════
+   EDIFICIO EN CONSTRUCCIÓN
+══════════════════ */
+const bldgGroup=new THREE.Group();
+bldgGroup.position.set(-9,0,-4);
+hScene.add(bldgGroup);
+
+// Columnas de concreto
+const colPos=[[-3,-1.5],[-3,0],[-3,1.5],[0,-1.5],[0,1.5],[3,-1.5],[3,0],[3,1.5]];
+colPos.forEach(([cx,cz])=>{
+  const col=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,7.5,12),mConcrete);
+  col.position.set(cx,3.75,cz); col.castShadow=true; bldgGroup.add(col);
+});
+
+// Losas de piso (3 niveles)
+[1.0,3.2,5.4].forEach(fy=>{
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(6.6,.22,3.2),mConcrete);
+  slab.position.set(0,fy,0); slab.castShadow=slab.receiveShadow=true;
+  bldgGroup.add(slab);
+  // Viga perimetral
+  const beam=new THREE.Mesh(new THREE.BoxGeometry(6.6,.38,.2),mConcrete);
+  beam.position.set(0,fy+.3,-1.5); bldgGroup.add(beam);
+  // Muro parcial en niveles bajos
+  if(fy<4){
+    const wall=new THREE.Mesh(new THREE.BoxGeometry(6.6,1.9,.18),mConcrete);
+    wall.position.set(0,fy+1.05,-1.5); wall.castShadow=true; bldgGroup.add(wall);
+  }
+  // Paneles de vidrio en pisos altos
+  if(fy>=3.2){
+    [-2,0,2].forEach(wx=>{
+      const win=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.5,.05),mGlass);
+      win.position.set(wx,fy+1.5,-1.48); bldgGroup.add(win);
+    });
+  }
+});
+
+// Varilla expuesta en el techo
+for(let rx=-2.6;rx<=2.6;rx+=.8){
+  for(let rz=-1.2;rz<=1.2;rz+=.8){
+    const rebar=new THREE.Mesh(
+      new THREE.CylinderGeometry(.015,.015,.9+Math.random()*.5,6),
+      mRebar
+    );
+    rebar.position.set(rx,5.75+.45,rz);
+    rebar.rotation.z=(Math.random()-.5)*.12;
+    bldgGroup.add(rebar);
+  }
+}
+
+// Encofrado (madera)
+const enc=new THREE.Mesh(new THREE.BoxGeometry(6.6,.28,.09),mWood);
+enc.position.set(0,5.5,1.56); bldgGroup.add(enc);
+
+/* ══════════════════
+   CONTENEDOR DE OFICINA
+══════════════════ */
+const contGroup=new THREE.Group();
+contGroup.position.set(5.5,0,5); contGroup.rotation.y=-0.18;
+hScene.add(contGroup);
+
+const contMat=new THREE.MeshPhysicalMaterial({color:0x2a5535,roughness:.65,metalness:.55});
+const contBody=new THREE.Mesh(new THREE.BoxGeometry(5.6,2.45,2.25),contMat);
+contBody.position.set(0,1.225,0); contBody.castShadow=contBody.receiveShadow=true;
+contGroup.add(contBody);
+// Nervaduras del contenedor
+for(let cx=-2.6;cx<=2.6;cx+=.42){
+  const rib=new THREE.Mesh(new THREE.BoxGeometry(.035,2.45,2.25),
+    new THREE.MeshPhysicalMaterial({color:0x1e402a,roughness:.75,metalness:.6}));
+  rib.position.set(cx,1.225,0); contGroup.add(rib);
+}
+// Puerta
+const door=new THREE.Mesh(new THREE.BoxGeometry(.92,2.05,.06),
+  new THREE.MeshPhysicalMaterial({color:0x1e3a24,roughness:.6,metalness:.6}));
+door.position.set(-1.65,1.025,1.155); contGroup.add(door);
+// Manija
+const handle=new THREE.Mesh(new THREE.BoxGeometry(.04,.3,.05),mSteelBright);
+handle.position.set(-1.18,1.025,1.19); contGroup.add(handle);
+// Ventana
+const cWin=new THREE.Mesh(new THREE.BoxGeometry(.85,.7,.05),mGlass);
+cWin.position.set(.6,1.75,1.155); contGroup.add(cWin);
+// Marco ventana
+const cWinFrame=new THREE.Mesh(new THREE.BoxGeometry(.95,.8,.04),
+  new THREE.MeshPhysicalMaterial({color:0x888880,roughness:.4,metalness:.7}));
+cWinFrame.position.set(.6,1.75,1.14); contGroup.add(cWinFrame);
+
+/* ══════════════════
+   OBJETOS DE OBRA
+══════════════════ */
+// Bloques de concreto
+[[-3,3.8],[-5,1],[6,-2],[5.5,3],[3,-4],[7,0]].forEach(([bx,bz])=>{
+  const bw=.7+Math.random()*.5, bh=.45+Math.random()*.25, bd=1.1+Math.random()*.45;
+  const bl=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bd),mConcrete);
+  bl.position.set(bx,bh/2,bz); bl.rotation.y=(Math.random()-.5)*.5;
+  bl.castShadow=bl.receiveShadow=true; hScene.add(bl);
+});
+
+// Pila de varilla
+const rg=new THREE.Group(); rg.position.set(-6.5,0,1.5); hScene.add(rg);
+for(let i=0;i<18;i++){
+  const rb=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,3.2+Math.random()*.8,6),mRebar);
+  rb.rotation.z=Math.PI/2+(Math.random()-.5)*.35; rb.rotation.y=(Math.random()-.5)*.5;
+  rb.position.set((Math.random()-.5)*.55,i*.055+.06,(Math.random()-.5)*.9);
+  rb.castShadow=true; rg.add(rb);
+}
+
+// Conos y barreras
+[[-4,2.5],[4.5,-1],[-2.5,-2.5],[6.5,3.2],[1.8,-4.2]].forEach(([bx,bz])=>{
+  const bar=new THREE.Group(); hScene.add(bar);
+  // Barril naranja/blanco
+  const bdy=new THREE.Mesh(new THREE.CylinderGeometry(.21,.23,.6,14),mOrange);
+  bdy.position.set(bx,.3,bz); bdy.castShadow=true; hScene.add(bdy);
+  const stripe=new THREE.Mesh(new THREE.CylinderGeometry(.215,.215,.09,14,1,true),
+    new THREE.MeshStandardMaterial({color:0xf0ece2,roughness:.8,side:THREE.DoubleSide}));
+  stripe.position.set(bx,.36,bz); hScene.add(stripe);
+});
+
+// Montón de arena (cono aplastado)
+const sandMat=new THREE.MeshStandardMaterial({color:0x9a8a62,roughness:.98});
+[[4.2,-3.8],[-5.5,-2.2]].forEach(([px,pz])=>{
+  const pile=new THREE.Mesh(new THREE.ConeGeometry(1.3,.75,18),sandMat);
+  pile.position.set(px,.375,pz); pile.receiveShadow=true; hScene.add(pile);
+});
+
+/* ══════════════════
+   ANDAMIO de fondo
+══════════════════ */
+const scaffG=new THREE.Group(); scaffG.position.set(-8,0,-5); hScene.add(scaffG);
+[[-2,0],[0,0],[2,0],[-2,2],[0,2],[2,2]].forEach(([x,z])=>{
+  const p=tube(new THREE.Vector3(x,0,z),new THREE.Vector3(x,5.8,z),.055,mSteel);
+  if(p)scaffG.add(p);
+});
+[1.8,3.6].forEach(hy=>{
+  for(let z=0;z<=2;z+=2){
+    const h=tube(new THREE.Vector3(-2,hy,z),new THREE.Vector3(2,hy,z),.04,mSteel);
+    if(h)scaffG.add(h);
+  }
+  const plank=new THREE.Mesh(new THREE.BoxGeometry(4.2,.06,2.15),mWood);
+  plank.position.set(0,hy+.03,1); scaffG.add(plank);
+});
+// Edificio parcial detrás
+const bkWall=new THREE.Mesh(new THREE.BoxGeometry(4.4,5.5,3.2),mConcrete);
+bkWall.position.set(0,2.75,-1.6); bkWall.castShadow=true; scaffG.add(bkWall);
+const bkEdge=new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(4.4,5.5,3.2)),
+  new THREE.LineBasicMaterial({color:0x4fc3f7,transparent:true,opacity:.14})
+);
+bkEdge.position.copy(bkWall.position); scaffG.add(bkEdge);
+
+/* ══════════════════
+   PARTÍCULAS DE POLVO
+══════════════════ */
+const dGeo=new THREE.BufferGeometry();
+const dp=new Float32Array(1400*3);
+for(let i=0;i<1400;i++){
+  dp[i*3]=(Math.random()-.5)*55;
+  dp[i*3+1]=Math.random()*20;
+  dp[i*3+2]=(Math.random()-.5)*45;
+}
+dGeo.setAttribute('position',new THREE.BufferAttribute(dp,3));
+const dustMesh=new THREE.Points(dGeo,new THREE.PointsMaterial({color:0xd4c8a0,size:.07,transparent:true,opacity:.18}));
+hScene.add(dustMesh);
+
+/* ══════════════════
+   FÍSICA DEL PÉNDULO + ANIMACIÓN HERO
+══════════════════ */
+let targetCY=0,currentCY=0,prevCY=0,signAngle=0,signVel=0,mouseNX=0;
+document.addEventListener('mousemove',e=>{mouseNX=(e.clientX/innerWidth-.5)*2;});
+
+function animHero(){
+  requestAnimationFrame(animHero);
+  const t=Date.now()*.001;
+  // Rotación de la grúa siguiendo el mouse
+  targetCY=mouseNX*Math.PI*.5;
+  currentCY+=(targetCY-currentCY)*.04;
+  craneGroup.rotation.y=currentCY;
+  // Péndulo del cartel
+  const angVel=currentCY-prevCY;
+  signVel+=angVel*3.6; signVel-=signAngle*.09; signVel*=.91;
+  signAngle+=signVel; prevCY=currentCY;
+  hookGroup.rotation.z=signAngle;
+  // Trolley sigue al mouse
+  const tx=2.5+mouseNX*2.8;
+  trolleyGroup.position.x=tx; hookGroup.position.x=tx;
+  // Polvo girando suavemente
+  dustMesh.rotation.y=t*.012;
+  // Respiración de cámara
+  hCam.position.y=9+Math.sin(t*.32)*.22;
+  hRenderer.render(hScene,hCam);
+}
+animHero();
+window.addEventListener('resize',()=>{
+  hCam.aspect=innerWidth/innerHeight;
+  hCam.updateProjectionMatrix();
+  hRenderer.setSize(innerWidth,innerHeight);
+});
+
+/* ══════════════════════════════════════════════════
+   PUENTE CABLE-ATIRANTADO — THREE.JS
+══════════════════════════════════════════════════ */
+const bEl=document.getElementById('bridge-canvas');
+const bR=new THREE.WebGLRenderer({canvas:bEl,antialias:true,alpha:true});
+bR.setClearColor(0x000000,0);
+bR.toneMapping=THREE.ACESFilmicToneMapping;
+bR.toneMappingExposure=1.1;
+bR.outputEncoding=THREE.sRGBEncoding;
+
+const bScene=new THREE.Scene();
+const bCam=new THREE.PerspectiveCamera(50,1,.1,200);
+bCam.position.set(0,7,19); bCam.lookAt(0,2.5,0);
+
+function resizeBridge(){
+  const p=bEl.parentElement;
+  const w=p.clientWidth, h=p.clientHeight||560;
+  bR.setSize(w,h); bCam.aspect=w/h; bCam.updateProjectionMatrix();
+}
+
+bScene.add(new THREE.AmbientLight(0xfff0cc,.65));
+const bDir=new THREE.DirectionalLight(0xffeebb,1.6);
+bDir.position.set(8,16,10); bDir.castShadow=true; bScene.add(bDir);
+const bFill=new THREE.PointLight(0x4fc3f7,.55,35);
+bFill.position.set(-7,5,7); bScene.add(bFill);
+const bRim=new THREE.DirectionalLight(0x224466,.45);
+bRim.position.set(-5,3,-12); bScene.add(bRim);
+
+/* Materials puente */
+const bMatConcrete=new THREE.MeshStandardMaterial({color:0x7a7e76,roughness:.92,metalness:.0});
+const bMatDeck=new THREE.MeshPhysicalMaterial({color:0x4fc3f7,roughness:.55,metalness:.45,transparent:true,opacity:.88});
+const bMatStay=new THREE.MeshPhysicalMaterial({color:0xe07b30,roughness:.2,metalness:.92,clearcoat:.5});
+const bMatBeam=new THREE.MeshPhysicalMaterial({color:0xf5a800,roughness:.3,metalness:.88,clearcoat:.4});
+const bMatWater=new THREE.MeshStandardMaterial({color:0x1a3a52,roughness:.08,metalness:.25,transparent:true,opacity:.75});
+
+function bTube(p0,p1,r,mat){
+  const d=new THREE.Vector3().subVectors(p1,p0);
+  const l=d.length(); if(l<0.001)return null;
+  const mid=new THREE.Vector3().addVectors(p0,p1).multiplyScalar(.5);
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,l,10),mat);
+  m.position.copy(mid); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
+  m.castShadow=true; return m;
+}
+
+// ─── TABLERO ───
+const deck=new THREE.Mesh(new THREE.BoxGeometry(18.5,.28,2.8),bMatDeck);
+deck.position.set(0,2.2,0); deck.castShadow=deck.receiveShadow=true; bScene.add(deck);
+
+// Línea central pintada en el tablero
+const deckCv=document.createElement('canvas');
+deckCv.width=512; deckCv.height=64;
+const dC=deckCv.getContext('2d');
+dC.fillStyle='rgba(79,195,247,0.85)'; dC.fillRect(0,0,512,64);
+dC.strokeStyle='rgba(245,168,0,0.7)'; dC.lineWidth=4;
+dC.setLineDash([30,18]);
+dC.beginPath(); dC.moveTo(0,32); dC.lineTo(512,32); dC.stroke();
+deck.material.map=new THREE.CanvasTexture(deckCv);
+
+// Vigas de alma bajo el tablero
+[-1.1,1.1].forEach(z=>{
+  const beam=new THREE.Mesh(new THREE.BoxGeometry(18.5,.22,.1),bMatBeam);
+  beam.position.set(0,2.06,z); bScene.add(beam);
+});
+for(let x=-8.5;x<=8.5;x+=2){
+  const xb=new THREE.Mesh(new THREE.BoxGeometry(.12,.18,2.8),
+    new THREE.MeshPhysicalMaterial({color:0xe07b30,roughness:.4,metalness:.82}));
+  xb.position.set(x,2.0,0); bScene.add(xb);
+}
+
+// ─── PILONES H (cable-atirantado) ───
+[-5.8,5.8].forEach(px=>{
+  // Dos piernas
+  [-0.9,0.9].forEach(z=>{
+    const leg=bTube(new THREE.Vector3(px,-0.5,z),new THREE.Vector3(px,7.5,z),.2,bMatConcrete);
+    if(leg)bScene.add(leg);
+  });
+  // Viga transversal media
+  const xm=bTube(new THREE.Vector3(px,3.2,-.9),new THREE.Vector3(px,3.2,.9),.14,bMatConcrete);
+  if(xm)bScene.add(xm);
+  // Viga transversal superior
+  const xt=bTube(new THREE.Vector3(px,6.8,-.9),new THREE.Vector3(px,6.8,.9),.14,bMatConcrete);
+  if(xt)bScene.add(xt);
+
+  // ─── CABLES DE ATIRANTAMIENTO ───
+  const sign=px<0?-1:1;
+  const deckAnchors=[-8,-6,-4,-2,0,2,4,6,8].map(xa=>new THREE.Vector3(xa,2.35,0));
+  const topLeft=new THREE.Vector3(px,7.0,-0.9);
+  const topRight=new THREE.Vector3(px,7.0,0.9);
+  deckAnchors.forEach(da=>{
+    if((sign>0&&da.x<=px+0.5)||(sign<0&&da.x>=px-0.5)){
+      const c1=bTube(topLeft,da,.025,bMatStay);
+      const c2=bTube(topRight,da,.025,bMatStay);
+      if(c1)bScene.add(c1); if(c2)bScene.add(c2);
+    }
+  });
+});
+
+// ─── ESTRIBOS ───
+[-9.8,9.8].forEach(x=>{
+  const ab=new THREE.Mesh(new THREE.BoxGeometry(1.4,2.5,3.4),bMatConcrete);
+  ab.position.set(x,1.25,0); ab.castShadow=true; bScene.add(ab);
+});
+
+// ─── AGUA ───
+const water=new THREE.Mesh(new THREE.PlaneGeometry(22,7),bMatWater);
+water.rotation.x=-Math.PI/2; water.position.y=-.4; bScene.add(water);
+// Ondas del agua
+const wGrid=new THREE.GridHelper(22,22,0x1e4a5a,0x152e3a);
+wGrid.position.y=-.38; bScene.add(wGrid);
+
+// Barrancos (laderas del río)
+[-11.5,11.5].forEach(x=>{
+  const bank=new THREE.Mesh(new THREE.BoxGeometry(2.5,1.8,7.5),
+    new THREE.MeshStandardMaterial({color:0x3a3c35,roughness:.97}));
+  bank.position.set(x,.5,0); bank.receiveShadow=true; bScene.add(bank);
+});
+
+// ─── ANIMACIÓN PUENTE ───
+let waterPhase=0;
+function animBridge(){
+  requestAnimationFrame(animBridge);
+  const t=Date.now()*.0004;
+  waterPhase+=.008;
+  // Ondas de agua simuladas en el color
+  bMatWater.color.setHSL(.56,.55,.08+Math.sin(waterPhase)*.015);
+  bScene.rotation.y=Math.sin(t*.5)*.28;
+  bCam.position.y=7+Math.sin(t*.32)*.45;
+  bR.render(bScene,bCam);
+}
+animBridge();
+resizeBridge();
+window.addEventListener('resize',resizeBridge);
+
+/* ══════════════════════════════════════════════════
+   PROYECTO 3D (tarjeta grande)
+══════════════════════════════════════════════════ */
+const p3El=document.getElementById('proj3d');
+if(p3El){
+  const pCv=document.createElement('canvas');
+  p3El.appendChild(pCv); pCv.style.cssText='width:100%;height:100%;display:block;';
+  const pR=new THREE.WebGLRenderer({canvas:pCv,antialias:true,alpha:true});
+  pR.setClearColor(0x000000,0);
+  pR.toneMapping=THREE.ACESFilmicToneMapping;
+  pR.toneMappingExposure=1.1;
+  pR.outputEncoding=THREE.sRGBEncoding;
+  const pS=new THREE.Scene();
+  const pC=new THREE.PerspectiveCamera(58,2,.1,100);
+  pC.position.set(0,4,9); pC.lookAt(0,1.5,0);
+  pS.add(new THREE.AmbientLight(0xfff0cc,.6));
+  const pd=new THREE.DirectionalLight(0xf5a800,1.4);
+  pd.position.set(5,12,6); pS.add(pd);
+  const pc=new THREE.PointLight(0x4fc3f7,.5,20);
+  pc.position.set(-4,5,4); pS.add(pc);
+
+  const pYellow=new THREE.MeshPhysicalMaterial({color:0xf5a800,roughness:.25,metalness:.85,clearcoat:.6});
+  const pOrange=new THREE.MeshPhysicalMaterial({color:0xe07b30,roughness:.3,metalness:.8});
+  const pCon=new THREE.MeshStandardMaterial({color:0x5a5e56,roughness:.92});
+  const pWire=new THREE.LineBasicMaterial({color:0xf5a800,transparent:true,opacity:.8});
+
+  // Puente colgante en miniatura
+  // Tablero
+  const mDeck=new THREE.Mesh(new THREE.BoxGeometry(11,.18,1.5),
+    new THREE.MeshPhysicalMaterial({color:0x4fc3f7,roughness:.5,metalness:.5,transparent:true,opacity:.85}));
+  mDeck.position.y=1.8; pS.add(mDeck);
+
+  // Pilones H
+  [-3.8,3.8].forEach(px=>{
+    [-0.6,0.6].forEach(z=>{
+      const lm=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,4.5,10),pCon);
+      lm.position.set(px,2.5,z); pS.add(lm);
+    });
+    const xb=new THREE.Mesh(new THREE.BoxGeometry(.18,.12,1.2),pCon);
+    xb.position.set(px,3.8,0); pS.add(xb);
+  });
+
+  // Cables de atirantamiento
+  function pTube(a,b,r,mat){
+    const d=new THREE.Vector3().subVectors(b,a);
+    const l=d.length(); if(l<.001)return null;
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,l,8),mat);
+    m.position.copy(new THREE.Vector3().addVectors(a,b).multiplyScalar(.5));
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
+    return m;
+  }
+  const pTop1=new THREE.Vector3(-3.8,4.5,0);
+  const pTop2=new THREE.Vector3(3.8,4.5,0);
+  [-5,-3,-1,1,3].forEach(xa=>{
+    const da=new THREE.Vector3(xa,1.9,0);
+    const c1=pTube(pTop1,da,.018,pOrange); if(c1)pS.add(c1);
+    const c2=pTube(pTop2,da,.018,pOrange); if(c2)pS.add(c2);
+  });
+
+  // Cable catenario
+  const cPts=[];
+  for(let i=0;i<=30;i++){const x=-5.5+i*11/30; cPts.push(new THREE.Vector3(x,1.8+2.8*Math.pow(x/5.8,2)*.45,0));}
+  pS.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(cPts),pWire));
+
+  // Agua
+  const mW=new THREE.Mesh(new THREE.PlaneGeometry(13,3.5),
+    new THREE.MeshStandardMaterial({color:0x1a3040,roughness:.08,transparent:true,opacity:.65}));
+  mW.rotation.x=-Math.PI/2; mW.position.y=.5; pS.add(mW);
+  const wG=new THREE.GridHelper(13,15,0x1e4a60,0x102030);
+  wG.position.y=.52; pS.add(wG);
+
+  // Estribos
+  [-5.8,5.8].forEach(x=>{
+    const ab=new THREE.Mesh(new THREE.BoxGeometry(.9,1.5,1.8),pCon);
+    ab.position.set(x,1.05,0); pS.add(ab);
+  });
+
+  function rP(){
+    requestAnimationFrame(rP);
+    const t=Date.now()*.0005;
+    pS.rotation.y=t*.18;
+    pC.position.y=4+Math.sin(t*.4)*.3;
+    pR.render(pS,pC);
+  }
+  rP();
+  function resP(){
+    const w=p3El.clientWidth,h=p3El.clientHeight;
+    pR.setSize(w,h); pC.aspect=w/h; pC.updateProjectionMatrix();
+  }
+  resP();
+  window.addEventListener('resize',resP);
+}
+
+/* ===== SCROLL ANIMATIONS + COUNTERS ===== */
+function counter(el,target,dur){
+  let v=0; const step=target/(dur/16);
+  const t=setInterval(()=>{v+=step;if(v>=target){v=target;clearInterval(t);}el.textContent=Math.floor(v);},16);
+}
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('on');
+    const sn=e.target.querySelector('.sn');
+    if(sn&&!sn.dataset.done){sn.dataset.done=1;counter(sn,+sn.dataset.t,1600);}
+    e.target.querySelectorAll('.cap-fill').forEach(f=>{
+      if(!f.dataset.done){f.dataset.done=1;setTimeout(()=>f.classList.add('go'),200);}
+    });
+  });
+},{threshold:.1});
+document.querySelectorAll('.rev, #stats').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
