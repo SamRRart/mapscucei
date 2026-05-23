@@ -85,7 +85,7 @@ export default function Viewer() {
 
         async function procesarImagenHuffman() {
             // Si el nodo no tiene imagen 360, limpiamos y salimos
-            if (!has360 || !nodeData.image_360) {
+            if (!has360 || !nodeData.image_360 || typeof nodeData.image_360 !== 'string') {
                 if (montado) setHuffmanUrl(null);
                 return;
             }

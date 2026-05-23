@@ -122,7 +122,7 @@ function comprimirCarpetaCompleta(carpetaEntrada, carpetaSalida) {
 
 // --- 4. EJECUCIÓN MASIVA ---
 // Define la carpeta donde están tus 73 imágenes originales
-const carpetaOrigen = './public/images'; 
+const carpetaOrigen = './public'; 
 
 // Define la carpeta donde se guardarán los 73 archivos .huff
 const carpetaDestino = './public/mapcomprimido';

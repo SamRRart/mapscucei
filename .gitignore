@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ignorar mapas comprimidos generados localmente
+/public/mapcomprimido/
