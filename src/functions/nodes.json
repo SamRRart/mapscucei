@@ -1,9 +1,9 @@
 {
   "node_001": {
     "node": "node_001",
-    "name": "nodo_001",
+    "name": "Pasillo Rojo Entrada Edificio R",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_001.jpg",
     "coords_gps": {
       "lat": 20.6575509,
       "lng": -103.3260137
@@ -21,9 +21,9 @@
   },
   "node_002": {
     "node": "node_002",
-    "name": "nodo_002",
+    "name": "Intersección Edificio R - Pasillo Rojo",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_002.jpg",
     "coords_gps": {
       "lat": 20.6576061,
       "lng": -103.3258367
@@ -42,9 +42,9 @@
   },
   "node_003": {
     "node": "node_003",
-    "name": "nodo_003",
+    "name": "Edificio S1",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_003.jpg",
     "coords_gps": {
       "lat": 20.6576412,
       "lng": -103.3265716
@@ -63,9 +63,9 @@
   },
   "node_004": {
     "node": "node_004",
-    "name": "nodo_004",
+    "name": "Patio Edificio R",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_004.jpg",
     "coords_gps": {
       "lat": 20.657586,
       "lng": -103.3256543
@@ -84,9 +84,9 @@
   },
   "node_005": {
     "node": "node_005",
-    "name": "nodo_005",
+    "name": "Edificio S2",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_005.jpg",
     "coords_gps": {
       "lat": 20.6578621,
       "lng": -103.3265877
@@ -104,9 +104,9 @@
   },
   "node_006": {
     "node": "node_006",
-    "name": "nodo_006",
+    "name": "Intersección Edificio W - Edificio V2",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_006.jpg",
     "coords_gps": {
       "lat": 20.6580328,
       "lng": -103.3266199
@@ -124,9 +124,9 @@
   },
   "node_007": {
     "node": "node_007",
-    "name": "nodo_007",
+    "name": "Intersección Edificio X - Edificio V",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_007.jpg",
     "coords_gps": {
       "lat": 20.6581934,
       "lng": -103.3266199
@@ -145,9 +145,9 @@
   },
   "node_008": {
     "node": "node_008",
-    "name": "nodo_008",
+    "name": "Patio Matematicas (Edificio V)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_008.jpg",
     "coords_gps": {
       "lat": 20.6582135,
       "lng": -103.3262765
@@ -164,9 +164,9 @@
   },
   "node_009": {
     "node": "node_009",
-    "name": "nodo_009",
+    "name": "Edificio X - Edificio W",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_009.jpg",
     "coords_gps": {
       "lat": 20.6581733,
       "lng": -103.3269578
@@ -183,9 +183,9 @@
   },
   "node_010": {
     "node": "node_010",
-    "name": "nodo_010",
+    "name": "Final Edificio X",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_010.jpg",
     "coords_gps": {
       "lat": 20.6581733,
       "lng": -103.3272207
@@ -201,9 +201,9 @@
   },
   "node_011": {
     "node": "node_011",
-    "name": "nodo_011",
+    "name": "Edificio Y (Chedrahui) - Auditorio Nikolai V.",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_011.jpg",
     "coords_gps": {
       "lat": 20.6574505,
       "lng": -103.3272851
@@ -220,9 +220,9 @@
   },
   "node_012": {
     "node": "node_012",
-    "name": "nodo_012",
+    "name": "Intersección Edificio Y - Edificio Z1 - Edificio Z2",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_012.jpg",
     "coords_gps": {
       "lat": 20.6574505,
       "lng": -103.3277625
@@ -238,9 +238,9 @@
   },
   "node_013": {
     "node": "node_013",
-    "name": "nodo_013",
+    "name": "Patio Edificio Y",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_013.jpg",
     "coords_gps": {
       "lat": 20.6575358,
       "lng": -103.3268774
@@ -257,9 +257,9 @@
   },
   "node_014": {
     "node": "node_014",
-    "name": "nodo_014",
+    "name": "Pasillo Comida 1",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_014.jpg",
     "coords_gps": {
       "lat": 20.6584159,
       "lng": -103.326627
@@ -276,9 +276,9 @@
   },
   "node_015": {
     "node": "node_015",
-    "name": "nodo_015",
+    "name": "Pasillo Comida 2",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_015.jpg",
     "coords_gps": {
       "lat": 20.6585665,
       "lng": -103.3266324
@@ -295,9 +295,9 @@
   },
   "node_016": {
     "node": "node_016",
-    "name": "nodo_016",
+    "name": "Pasillo Comida 3",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_016.jpg",
     "coords_gps": {
       "lat": 20.6587472,
       "lng": -103.326627
@@ -314,9 +314,9 @@
   },
   "node_017": {
     "node": "node_017",
-    "name": "nodo_017",
+    "name": "Pasillo Comida 5",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_017.jpg",
     "coords_gps": {
       "lat": 20.6589379,
       "lng": -103.3266056
@@ -333,9 +333,9 @@
   },
   "node_018": {
     "node": "node_018",
-    "name": "nodo_018",
+    "name": "Pasillo Comida 6",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_018.jpg",
     "coords_gps": {
       "lat": 20.6591086,
       "lng": -103.3266163
@@ -352,9 +352,9 @@
   },
   "node_019": {
     "node": "node_019",
-    "name": "nodo_019",
+    "name": "Pasillo Comida 7",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_019.jpg",
     "coords_gps": {
       "lat": 20.6592491,
       "lng": -103.3266377
@@ -370,9 +370,9 @@
   },
   "node_020": {
     "node": "node_020",
-    "name": "nodo_020",
+    "name": "Pasillo Comida 4",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_020.jpg",
     "coords_gps": {
       "lat": 20.6588426,
       "lng": -103.3266109
@@ -389,9 +389,9 @@
   },
   "node_021": {
     "node": "node_021",
-    "name": "nodo_021",
+    "name": "Intersección Edificio V - Detras Edificio U",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_021.jpg",
     "coords_gps": {
       "lat": 20.6582503,
       "lng": -103.3259726
@@ -408,9 +408,9 @@
   },
   "node_022": {
     "node": "node_022",
-    "name": "nodo_022",
+    "name": "Patio de Fisica (Edificio V2)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_022.jpg",
     "coords_gps": {
       "lat": 20.6580595,
       "lng": -103.3262247
@@ -427,9 +427,9 @@
   },
   "node_023": {
     "node": "node_023",
-    "name": "nodo_023",
+    "name": "Intersección Edificio V2 - Edificio U",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_023.jpg",
     "coords_gps": {
       "lat": 20.6580796,
       "lng": -103.3259296
@@ -448,9 +448,9 @@
   },
   "node_024": {
     "node": "node_024",
-    "name": "nodo_024",
+    "name": "Intersección Edificio S2 - Edificio T",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_024.jpg",
     "coords_gps": {
       "lat": 20.6578805,
       "lng": -103.3258688
@@ -469,9 +469,9 @@
   },
   "node_025": {
     "node": "node_025",
-    "name": "nodo_025",
+    "name": "Comedor/Baños S2",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_025.jpg",
     "coords_gps": {
       "lat": 20.6578052,
       "lng": -103.326062
@@ -488,9 +488,9 @@
   },
   "node_027": {
     "node": "node_027",
-    "name": "nodo_027",
+    "name": "Edificio T",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_027.jpg",
     "coords_gps": {
       "lat": 20.6578504,
       "lng": -103.3254558
@@ -510,9 +510,9 @@
   },
   "node_028": {
     "node": "node_028",
-    "name": "nodo_028",
+    "name": "Edificio U",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_028.jpg",
     "coords_gps": {
       "lat": 20.6580562,
       "lng": -103.3254343
@@ -530,9 +530,9 @@
   },
   "node_029": {
     "node": "node_029",
-    "name": "nodo_029",
+    "name": "Intersección Laboratiorio de Ingenierias",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_029.jpg",
     "coords_gps": {
       "lat": 20.6581917,
       "lng": -103.3250695
@@ -549,9 +549,9 @@
   },
   "node_030": {
     "node": "node_030",
-    "name": "nodo_030",
+    "name": "Intersección Edificio U - Edificio T",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_030.jpg",
     "coords_gps": {
       "lat": 20.658021,
       "lng": -103.3250535
@@ -568,9 +568,9 @@
   },
   "node_031": {
     "node": "node_031",
-    "name": "nodo_031",
+    "name": "Cafe de cordoba (Edificio T)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_031.jpg",
     "coords_gps": {
       "lat": 20.6578454,
       "lng": -103.3250481
@@ -588,9 +588,9 @@
   },
   "node_032": {
     "node": "node_032",
-    "name": "nodo_032",
+    "name": "Edificio Q",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_032.jpg",
     "coords_gps": {
       "lat": 20.6577349,
       "lng": -103.3249032
@@ -609,9 +609,9 @@
   },
   "node_033": {
     "node": "node_033",
-    "name": "nodo_033",
+    "name": "Entrada Laboratorio de Ingenierias",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_033.jpg",
     "coords_gps": {
       "lat": 20.6578654,
       "lng": -103.3244151
@@ -629,9 +629,9 @@
   },
   "node_034": {
     "node": "node_034",
-    "name": "nodo_034",
+    "name": "Intersección Edificio O",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_034.jpg",
     "coords_gps": {
       "lat": 20.657064,
       "lng": -103.3265591
@@ -649,9 +649,9 @@
   },
   "node_035": {
     "node": "node_035",
-    "name": "nodo_035",
+    "name": "Edificio O (DIVTIC)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_035.jpg",
     "coords_gps": {
       "lat": 20.6572196,
       "lng": -103.3265591
@@ -668,9 +668,9 @@
   },
   "node_036": {
     "node": "node_036",
-    "name": "nodo_036",
+    "name": "Edificio M - Edificio O (Papeleria)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_036.jpg",
     "coords_gps": {
       "lat": 20.6570941,
       "lng": -103.3261085
@@ -687,9 +687,9 @@
   },
   "node_037": {
     "node": "node_037",
-    "name": "nodo_037",
+    "name": "Intersección Pasillo O (Pasillo Rojo)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_037.jpg",
     "coords_gps": {
       "lat": 20.6571092,
       "lng": -103.3259583
@@ -708,9 +708,9 @@
   },
   "node_038": {
     "node": "node_038",
-    "name": "nodo_038",
+    "name": "Entrada Edificio O (DIVTIC Principal)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_038.jpg",
     "coords_gps": {
       "lat": 20.6572899,
       "lng": -103.3259797
@@ -727,9 +727,9 @@
   },
   "node_039": {
     "node": "node_039",
-    "name": "nodo_039",
+    "name": "Intersección Pasillo Rojo - Edificio P",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_039.jpg",
     "coords_gps": {
       "lat": 20.65733,
       "lng": -103.3258295
@@ -746,9 +746,9 @@
   },
   "node_040": {
     "node": "node_040",
-    "name": "nodo_040",
+    "name": "Edificio P",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_040.jpg",
     "coords_gps": {
       "lat": 20.6572397,
       "lng": -103.3253789
@@ -768,9 +768,9 @@
   },
   "node_041": {
     "node": "node_041",
-    "name": "nodo_041",
+    "name": "Comedor Edificio P (JOBS 1)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_041.jpg",
     "coords_gps": {
       "lat": 20.6574605,
       "lng": -103.324821
@@ -787,9 +787,9 @@
   },
   "node_042": {
     "node": "node_042",
-    "name": "nodo_042",
+    "name": "Comedor Edificio P (Enfermeria)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_042.jpg",
     "coords_gps": {
       "lat": 20.6572698,
       "lng": -103.324821
@@ -807,9 +807,9 @@
   },
   "node_043": {
     "node": "node_043",
-    "name": "nodo_043",
+    "name": "Edificios JOBS",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_043.jpg",
     "coords_gps": {
       "lat": 20.65731,
       "lng": -103.3244026
@@ -826,9 +826,9 @@
   },
   "node_044": {
     "node": "node_044",
-    "name": "nodo_044",
+    "name": "Entrada Revolución",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_044.jpg",
     "coords_gps": {
       "lat": 20.6590969,
       "lng": -103.3244562
@@ -844,9 +844,9 @@
   },
   "node_045": {
     "node": "node_045",
-    "name": "nodo_045",
+    "name": "Control escolar",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_045.jpg",
     "coords_gps": {
       "lat": 20.6538287,
       "lng": -103.3256114
@@ -862,9 +862,9 @@
   },
   "node_047": {
     "node": "node_047",
-    "name": "nodo_047",
+    "name": "Mural rectoria",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_047.jpg",
     "coords_gps": {
       "lat": 20.6539592,
       "lng": -103.3258152
@@ -881,9 +881,9 @@
   },
   "node_048": {
     "node": "node_048",
-    "name": "nodo_048",
+    "name": "Entrada Rectoria",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_048.jpg",
     "coords_gps": {
       "lat": 20.6542854,
       "lng": -103.3259171
@@ -900,9 +900,9 @@
   },
   "node_049": {
     "node": "node_049",
-    "name": "nodo_049",
+    "name": "Pasillo Rectoria",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_049.jpg",
     "coords_gps": {
       "lat": 20.6545162,
       "lng": -103.3261317
@@ -920,9 +920,9 @@
   },
   "node_050": {
     "node": "node_050",
-    "name": "nodo_050",
+    "name": "Entrada Marcelino Garcia Barragan",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_050.jpg",
     "coords_gps": {
       "lat": 20.6545915,
       "lng": -103.3264965
@@ -938,9 +938,9 @@
   },
   "node_051": {
     "node": "node_051",
-    "name": "nodo_051",
+    "name": "Entrada Biblioteca",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_051.jpg",
     "coords_gps": {
       "lat": 20.6548625,
       "lng": -103.3257562
@@ -957,9 +957,9 @@
   },
   "node_052": {
     "node": "node_052",
-    "name": "nodo_052",
+    "name": "Patio Biblioteca",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_052.jpg",
     "coords_gps": {
       "lat": 20.6553791,
       "lng": -103.3257844
@@ -977,9 +977,9 @@
   },
   "node_053": {
     "node": "node_053",
-    "name": "nodo_053",
+    "name": "Entrada Edificio E",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_053.jpg",
     "coords_gps": {
       "lat": 20.6554695,
       "lng": -103.3259118
@@ -997,9 +997,9 @@
   },
   "node_054": {
     "node": "node_054",
-    "name": "nodo_054",
+    "name": "Patio Biblioteca Este",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_054.jpg",
     "coords_gps": {
       "lat": 20.6554494,
       "lng": -103.3253539
@@ -1015,9 +1015,9 @@
   },
   "node_055": {
     "node": "node_055",
-    "name": "nodo_055",
+    "name": "Edificio E - Auditorio",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_055.jpg",
     "coords_gps": {
       "lat": 20.65562,
       "lng": -103.3261371
@@ -1036,9 +1036,9 @@
   },
   "node_056": {
     "node": "node_056",
-    "name": "nodo_056",
+    "name": "Edificio E - Edificio F",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_056.jpg",
     "coords_gps": {
       "lat": 20.6556552,
       "lng": -103.325724
@@ -1057,9 +1057,9 @@
   },
   "node_057": {
     "node": "node_057",
-    "name": "nodo_057",
+    "name": "Pasillo E",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_057.jpg",
     "coords_gps": {
       "lat": 20.6556602,
       "lng": -103.3255041
@@ -1076,9 +1076,9 @@
   },
   "node_058": {
     "node": "node_058",
-    "name": "nodo_058",
+    "name": "Patio Pasillo E",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_058.jpg",
     "coords_gps": {
       "lat": 20.6558659,
       "lng": -103.325547
@@ -1094,9 +1094,9 @@
   },
   "node_059": {
     "node": "node_059",
-    "name": "nodo_059",
+    "name": "Pasillo F (QFB)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_059.jpg",
     "coords_gps": {
       "lat": 20.6558509,
       "lng": -103.3261532
@@ -1113,9 +1113,9 @@
   },
   "node_060": {
     "node": "node_060",
-    "name": "nodo_060",
+    "name": "Auditorio Antonio Rodriguez S.",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_060.jpg",
     "coords_gps": {
       "lat": 20.65562,
       "lng": -103.3266038
@@ -1131,9 +1131,9 @@
   },
   "node_061": {
     "node": "node_061",
-    "name": "nodo_061",
+    "name": "Intersección Edificio H - Edificio J",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_061.jpg",
     "coords_gps": {
       "lat": 20.6561218,
       "lng": -103.3261639
@@ -1151,9 +1151,9 @@
   },
   "node_062": {
     "node": "node_062",
-    "name": "nodo_062",
+    "name": "Intersección Edificio F - Edificio J",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_062.jpg",
     "coords_gps": {
       "lat": 20.656157,
       "lng": -103.3259064
@@ -1171,9 +1171,9 @@
   },
   "node_063": {
     "node": "node_063",
-    "name": "nodo_063",
+    "name": "Patio Edificio I",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_063.jpg",
     "coords_gps": {
       "lat": 20.656172,
       "lng": -103.3255899
@@ -1190,9 +1190,9 @@
   },
   "node_064": {
     "node": "node_064",
-    "name": "nodo_064",
+    "name": "Intersección Edificio I - Alfa/Beta",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_064.jpg",
     "coords_gps": {
       "lat": 20.6563064,
       "lng": -103.3254853
@@ -1210,9 +1210,9 @@
   },
   "node_065": {
     "node": "node_065",
-    "name": "nodo_065",
+    "name": "Edificios Alfa - Beta",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_065.jpg",
     "coords_gps": {
       "lat": 20.6563478,
       "lng": -103.3251983
@@ -1229,9 +1229,9 @@
   },
   "node_066": {
     "node": "node_066",
-    "name": "nodo_066",
+    "name": "Intersección Edificio K - Auditorio Jorge Matute Remus",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_066.jpg",
     "coords_gps": {
       "lat": 20.6564581,
       "lng": -103.3255631
@@ -1249,9 +1249,9 @@
   },
   "node_067": {
     "node": "node_067",
-    "name": "nodo_067",
+    "name": "Pasillo Rojo Entrada Edificio K",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_067.jpg",
     "coords_gps": {
       "lat": 20.656443,
       "lng": -103.3258152
@@ -1269,9 +1269,9 @@
   },
   "node_068": {
     "node": "node_068",
-    "name": "nodo_068",
+    "name": "Edificio K (Puestos de estudiantes)",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_068.jpg",
     "coords_gps": {
       "lat": 20.656428,
       "lng": -103.3262068
@@ -1288,9 +1288,9 @@
   },
   "node_069": {
     "node": "node_069",
-    "name": "nodo_069",
+    "name": "Intersección Edificio M - Edificio K",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_069.jpg",
     "coords_gps": {
       "lat": 20.6564129,
       "lng": -103.3265233
@@ -1308,9 +1308,9 @@
   },
   "node_070": {
     "node": "node_070",
-    "name": "nodo_070",
+    "name": "Entrada Vocacional",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_070.jpg",
     "coords_gps": {
       "lat": 20.6562222,
       "lng": -103.3265287
@@ -1327,9 +1327,9 @@
   },
   "node_071": {
     "node": "node_071",
-    "name": "nodo_071",
+    "name": "Intersección Alfa/Beta",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_071.jpg",
     "coords_gps": {
       "lat": 20.6563202,
       "lng": -103.3247423
@@ -1345,9 +1345,9 @@
   },
   "node_072": {
     "node": "node_072",
-    "name": "nodo_072",
+    "name": "Auditorio Jorge Matute Remus",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_072.jpg",
     "coords_gps": {
       "lat": 20.6566063,
       "lng": -103.3256489
@@ -1365,9 +1365,9 @@
   },
   "node_073": {
     "node": "node_073",
-    "name": "nodo_073",
+    "name": "Intersección Lab. Ingenieria Mecanica - Auditorio Jorge Matute Remus",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_073.jpg",
     "coords_gps": {
       "lat": 20.6567267,
       "lng": -103.325496
@@ -1383,9 +1383,9 @@
   },
   "node_074": {
     "node": "node_074",
-    "name": "nodo_074",
+    "name": "Intersección Edificio M",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_074.jpg",
     "coords_gps": {
       "lat": 20.6568196,
       "lng": -103.3259144
@@ -1404,9 +1404,9 @@
   },
   "node_075": {
     "node": "node_075",
-    "name": "nodo_075",
+    "name": "Intersección Edificio N - Edificio M",
     "landmark": false,
-    "image_360": "null",
+    "image_360": "/node_075.jpg",
     "coords_gps": {
       "lat": 20.6567945,
       "lng": -103.3265179
