@@ -12,8 +12,10 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
 import nodesData from '../functions/nodes.json';
 import '../styles/viewer.css';
+import { cargarMapaComprimido } from '../utils/huffman.js';
 
 // Pannellum se carga dinámicamente (CDN) la primera vez que se monta el viewer
 // Esto evita agregarlo como dependencia npm; se descarga solo cuando se necesita
@@ -68,6 +70,8 @@ export default function Viewer() {
     // Estado de hover en los botones de vecinos
     const [hoveredNeighbor, setHoveredNeighbor] = useState(null);
 
+    const [huffmanUrl, setHuffmanUrl] = useState(null);
+    const [isDecompressing, setIsDecompressing] = useState(false);
     // ── Navega a otro nodo conservando la ruta activa ──────────────────────
     // Siempre pasa el array de ruta como state para que el siguiente nodo
     // también sepa en qué posición de la ruta está
@@ -75,21 +79,68 @@ export default function Viewer() {
         navigate(`/viewer/${targetId}`, { state: { route: routePath } });
     }, [navigate, routePath]);
 
+    // ── NUEVO: Descomprimir archivo .huff ──────────────────────────────
+    useEffect(() => {
+        let montado = true;
+
+        async function procesarImagenHuffman() {
+            // Si el nodo no tiene imagen 360, limpiamos y salimos
+            if (!has360 || !nodeData.image_360) {
+                if (montado) setHuffmanUrl(null);
+                return;
+            }
+
+            setIsDecompressing(true);
+
+            setHuffmanUrl(null);
+
+            try {
+                // nodeData.image_360 normalmente es algo como "/images/node_001.jpg"
+                // Extraemos solo "node_001" para buscar su versión .huff
+                const nombreArchivo = nodeData.image_360.split('/').pop().split('.')[0];
+                const rutaHuff = `/mapcomprimido/${nombreArchivo}.huff`;
+
+                // Ejecutamos nuestro algoritmo
+                const urlEnMemoria = await cargarMapaComprimido(rutaHuff);
+                
+                if (montado) {
+                    setHuffmanUrl(urlEnMemoria);
+                    setIsDecompressing(false);
+                }
+            } catch (error) {
+                console.error("Error al descomprimir con Huffman:", error);
+                if (montado) setHuffmanUrl(null); 
+                setIsDecompressing(false);
+            }
+        }
+
+        procesarImagenHuffman();
+
+        return () => {
+            montado = false;
+            // Liberar la memoria RAM cuando cambiemos a otro nodo
+            if (huffmanUrl) URL.revokeObjectURL(huffmanUrl);
+        };
+    }, [nodeId, has360, nodeData]);
+
     // ── Inicia o actualiza el visor de imágenes 360° (Pannellum) ──────────
     // Se ejecuta cada vez que cambia el nodo o si el nodo tiene/no tiene imagen 360°
     // Si el nodo no tiene imagen 360°, no hace nada (muestra el placeholder)
+    
+    // ── Inicia o actualiza el visor de imágenes 360° (Pannellum) ──────────
+    // AHORA DEPENDE DE huffmanUrl EN LUGAR DE nodeId
     useEffect(() => {
         if (!pannellumRef.current) return;
 
         loadPannellum().then(() => {
-            // Destruir el visor anterior antes de crear uno nuevo
             if (viewerRef.current) {
                 try { viewerRef.current.destroy(); } catch (_) {}
                 viewerRef.current = null;
             }
-            if (!has360 || !pannellumRef.current) return;
+            
+            // Esperamos a que termine de descomprimir y tengamos la URL
+            if (!has360 || !pannellumRef.current || !huffmanUrl) return;
 
-            // Convertir los hotspots del JSON en objetos que entiende Pannellum
             const hotspots = (nodeData.hotspot_360 ?? [])
                 .filter(h => h.destiny && h.destiny !== 'placeholder')
                 .map(h => ({
@@ -103,7 +154,7 @@ export default function Viewer() {
 
             viewerRef.current = window.pannellum.viewer(pannellumRef.current, {
                 type:        'equirectangular',
-                panorama:    nodeData.image_360,
+                panorama:    huffmanUrl, // <--- AQUÍ USA LA RAM
                 autoLoad:    true,
                 compass:     false,
                 showZoomCtrl: false,
@@ -118,7 +169,7 @@ export default function Viewer() {
                 viewerRef.current = null;
             }
         };
-    }, [nodeId, has360]);   // re-run when node changes
+    }, [huffmanUrl, has360, nodeData]); // <--- ACTUALIZAMOS LAS DEPENDENCIAS
 
     // ── Inicia o actualiza el minimapa (Leaflet) ───────────────────────
     // Muestra el grafo completo del campus en pequeño:
@@ -206,16 +257,33 @@ export default function Viewer() {
 
             {/* ── 360° view OR placeholder ── */}
             <div style={S.panorama}>
-                {has360
-                    ? <div ref={pannellumRef} style={S.pnlmContainer} />
-                    : (
-                        <div style={S.placeholder}>
-                            <div style={S.placeholderIcon}>📷</div>
-                            <p style={S.placeholderTitle}>{nodeData.name}</p>
-                            <p style={S.placeholderSub}>Imagen 360° aún no disponible</p>
-                        </div>
-                    )
-                }
+                
+                {/* 1. El contenedor 360 siempre está renderizado, solo lo escondemos si está cargando */}
+                <div 
+                    ref={pannellumRef} 
+                    style={{ 
+                        ...S.pnlmContainer, 
+                        display: (has360 && !isDecompressing) ? 'block' : 'none' 
+                    }} 
+                />
+
+                {/* 2. Pantalla de carga (se muestra solo cuando Huffman está trabajando) */}
+                {has360 && isDecompressing && (
+                    <div style={S.placeholder}>
+                        <p style={{ color: '#fcd34d', fontWeight: 'bold' }}>
+                            ⚙️ Descomprimiendo nodo con Huffman...
+                        </p>
+                    </div>
+                )}
+
+                {/* 3. Pantalla de error cuando no hay imagen en el JSON */}
+                {!has360 && (
+                    <div style={S.placeholder}>
+                        <div style={S.placeholderIcon}>📷</div>
+                        <p style={S.placeholderTitle}>{nodeData.name}</p>
+                        <p style={S.placeholderSub}>Imagen 360° aún no disponible</p>
+                    </div>
+                )}
 
                 {/* ── Top bar ── */}
                 <div style={S.topBar}>
