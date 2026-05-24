@@ -1,20 +1,23 @@
 # Mapa Panorámico Inmersivo 360° - NavCUCEI
 
-## Descripción del Proyecto
-Este proyecto consiste en el desarrollo de una herramienta digital diseñada para ayudar a la comunidad del **Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI)** a navegar por sus instalaciones. Mediante un mapa panorámico de 360°, los usuarios pueden realizar recorridos virtuales por los pasillos y localizar puntos de interés clave como:
+##  Descripción del Proyecto
+**NavCUCEI** es una herramienta web interactiva diseñada para ayudar a la comunidad del **Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI)** de la Universidad de Guadalajara a navegar de forma óptima por sus instalaciones. 
 
-* Aulas y Auditorios.
-* Laboratorios y Salas de Maestros.
-* Baños y áreas comunes.
+A través de un mapa virtual y una experiencia inmersiva de 360° (estilo *Street View*), los estudiantes de nuevo ingreso, visitantes y personal del campus pueden ubicar de manera interactiva aulas, módulos, laboratorios, departamentos, auditorios y puestos de comida sin perderse.
 
-El objetivo principal es reducir el estrés y la confusión de los estudiantes de nuevo ingreso y visitantes externos al adaptarse a la extensión del campus.
+##  Características Principales
+*  **Navegación en Mapa Virtual:** Implementación de un lienzo interactivo personalizado del campus universitario utilizando la biblioteca de código abierto **Leaflet**.
+*  **Modo "Planear Ruta":** Permite al usuario seleccionar un nodo de inicio y un destino. El buscador integrado permite localizar espacios por nombre del edificio, número de nodo o descripción interna (como laboratorios o departamentos). El sistema calcula y dibuja el camino más corto utilizando el algoritmo de **Dijkstra** (los recorridos se encuentran pre-cargados para optimizar el tiempo de respuesta y evitar esperas).
+*  **Modo "Explorar" (Vistas 360°):** El usuario puede recorrer visualmente el campus a través de 73 fotografías panorámicas en alta resolución, simulando el entorno real mediante transiciones fluidas.
+*  **Optimización con Formato Propio (.huff):** Originalmente, el banco de imágenes de alta calidad representaba un peso total cercano a los 900 MB (con archivos individuales de entre 10 y 20 MB). Para aligerar la carga, el sistema procesa y comprime las imágenes a un formato propietario optimizado utilizando la codificación de **Huffman**. El visor web se encarga de descomprimir estos archivos `.huff` en tiempo real durante la navegación.
 
-## Metodología Técnica
-Para la implementación de la navegación, se utiliza una estructura de datos fundamental en la informática:
-
-* **Grafos:** El campus se representa como un grafo donde cada "panorama" es un **nodo**.
-* **Listas de Adyacencia:** Las conexiones entre puntos de vista se gestionan mediante listas de adyacencia, permitiendo un tránsito fluido y lógico entre nodos adyacentes.
-* **Navegación:** Implementación de recorridos simples para permitir al usuario "moverse" entre ubicaciones conectadas.
+##  Tecnologías y Algoritmos Utilizados
+* **Core Frontend:** React.js
+* **Mapas e Interfaz 2D:** Leaflet
+* **Renderizado Inmersivo 360°:** Pannellum (Librería nativa de JavaScript sin necesidad de plugins externos)
+* **Algoritmo de Enrutamiento:** Algoritmo de Dijkstra para Caminos Mínimos
+* **Algoritmo de Compresión:** Codificación de Huffman (Compresión sin pérdida de datos)
+* **Estructuras de Datos:** Grafos, matrices y listas de adyacencia serializadas en archivos `.json`
 
 ## Equipo: Los Power Rangers
 Este proyecto es desarrollado por los alumnos de la carrera de **Ingeniería en Computación**:
